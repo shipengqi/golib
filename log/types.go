@@ -1,12 +1,17 @@
 package log
 
+import (
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+)
 
-// Field is an alias for the field structure in the underlying log frame.
+// Field is an alias for the zapcore.Field.
 type Field = zapcore.Field
 
-// Level is an alias for the level structure in the underlying log frame.
+// Level is an alias for the zapcore.Level.
 type Level = zapcore.Level
 
+// Alias for zap log level.
 var (
 	// DebugLevel logs are typically voluminous, and are usually disabled in
 	// production.
@@ -32,7 +37,6 @@ var (
 var (
 	Any         = zap.Any
 	Array       = zap.Array
-	Object      = zap.Object
 	Binary      = zap.Binary
 	Bool        = zap.Bool
 	Bools       = zap.Bools
@@ -61,6 +65,7 @@ var (
 	Int64       = zap.Int64
 	Int64s      = zap.Int64s
 	Namespace   = zap.Namespace
+	Object      = zap.Object
 	Reflect     = zap.Reflect
 	Stack       = zap.Stack
 	String      = zap.String
