@@ -11,6 +11,9 @@ type Field = zapcore.Field
 // Level is an alias for the zapcore.Level.
 type Level = zapcore.Level
 
+// TimeEncoder is an alias for the zapcore.TimeEncoder.
+type TimeEncoder = zapcore.TimeEncoder
+
 // Alias for zap log level.
 var (
 	// DebugLevel logs are typically voluminous, and are usually disabled in

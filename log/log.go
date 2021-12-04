@@ -39,6 +39,12 @@ type Interface interface {
 	AtLevelf(level Level, template string, args ...interface{})
 	AtLevel(level Level, msg string, keysAndValues ...interface{})
 
+	// WithValues creates a child logger and adds some Field of
+	// context to this logger.
+	WithValues(fields ...Field) *Logger
+
+	// Flush calls the underlying Core's Sync method, flushing any buffered
+	// log entries. Applications should take care to call Sync before exiting.
 	Flush() error
 }
 
@@ -152,6 +158,12 @@ func AtLevelf(level Level, msg string, args ...interface{}) {
 // AtLevel logs a message at Level.
 func AtLevel(level Level, msg string, keysAndValues ...interface{}) {
 	defaultLogger.AtLevel(level, msg, keysAndValues...)
+}
+
+// WithValues creates a child logger and adds some Field of
+// context to this logger.
+func WithValues(fields ...Field) *Logger {
+	return defaultLogger.WithValues(fields...)
 }
 
 // Flush calls the underlying Core's Sync method, flushing any buffered

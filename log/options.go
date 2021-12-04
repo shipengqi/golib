@@ -1,6 +1,8 @@
 package log
 
-import "errors"
+import (
+	"errors"
+)
 
 // Options Configuration for logging
 type Options struct {
@@ -8,11 +10,15 @@ type Options struct {
 	DisableConsole bool `json:"disable-console" mapstructure:"disable-console"`
 	// DisableConsoleColor force disabling colors.
 	DisableConsoleColor bool `json:"disable-console-color" mapstructure:"disable-console-color"`
+	// DisableConsoleTime Whether to add a time
+	DisableConsoleTime bool `json:"disable-console-time" mapstructure:"disable-console-time"`
 	// DisableFile whether to log to file
 	DisableFile bool `json:"disable-file" mapstructure:"disable-file"`
 
 	// DisableFileJson whether to enable json format for log file
 	DisableFileJson bool `json:"disable-file-json" mapstructure:"disable-file-json"`
+	// DisableFileTime Whether to add a time
+	DisableFileTime bool `json:"disable-file-time" mapstructure:"disable-file-time"`
 
 	// DisableCaller whether to log caller info
 	DisableCaller bool `json:"disable-caller" mapstructure:"disable-caller"`
@@ -35,6 +41,8 @@ type Options struct {
 	Output string `json:"output" mapstructure:"output"`
 	// FilenameEncoder log filename encoder
 	FilenameEncoder FilenameEncoder `json:"filename-encoder" mapstructure:"filename-encoder"`
+	// TimeEncoder log filename encoder
+	TimeEncoder TimeEncoder `json:"time-encoder" mapstructure:"time-encoder"`
 }
 
 // NewOptions creates a Options with default parameters.
@@ -44,6 +52,7 @@ func NewOptions() *Options {
 		DisableRotate:   true,
 		ConsoleLevel:    InfoLevel.String(),
 		FilenameEncoder: DefaultFilenameEncoder,
+		TimeEncoder:     DefaultTimeEncoder,
 	}
 }
 

@@ -19,7 +19,7 @@ func DefaultFilenameEncoder() string {
 	return fmt.Sprintf("%s-%s.log", filepath.Base(os.Args[0]), time.Now().Format("20060102"))
 }
 
-func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+func DefaultTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
 }
 

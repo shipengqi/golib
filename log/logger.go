@@ -22,12 +22,10 @@ func New(opts *Options) *Logger {
 	var cores []zapcore.Core
 
 	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "time",
 		LevelKey:       "level",
 		NameKey:        "logger",
 		MessageKey:     "msg",
 		StacktraceKey:  "stack",
-		EncodeTime:     timeEncoder,
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
 		EncodeDuration: zapcore.MillisDurationEncoder,
@@ -36,7 +34,9 @@ func New(opts *Options) *Logger {
 	if !opts.DisableCaller {
 		encoderConfig.CallerKey = "caller"
 	}
-
+	if opts.TimeEncoder != nil {
+		encoderConfig.EncodeTime = opts.TimeEncoder
+	}
 	if !opts.DisableConsole {
 		var consoleLevel Level
 		err := consoleLevel.Set(strings.ToLower(opts.ConsoleLevel))
@@ -44,6 +44,9 @@ func New(opts *Options) *Logger {
 			consoleLevel = InfoLevel
 		}
 		consoleEncCfg := encoderConfig
+		if !opts.DisableConsoleTime {
+			consoleEncCfg.TimeKey = "time"
+		}
 		if !opts.DisableConsoleColor {
 			consoleEncCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		}
@@ -60,7 +63,9 @@ func New(opts *Options) *Logger {
 		if err != nil {
 			fileLevel = InfoLevel
 		}
-
+		if !opts.DisableFileTime {
+			encoderConfig.TimeKey = "time"
+		}
 		fileEncoder := zapcore.NewConsoleEncoder(encoderConfig)
 		if !opts.DisableFileJson {
 			fileEncoder = zapcore.NewJSONEncoder(encoderConfig)
@@ -208,6 +213,14 @@ func (l *Logger) AtLevelf(level Level, msg string, args ...interface{}) {
 	default:
 		l.Warnt("unknown level", Any("level", level))
 		l.Warnf(msg, args...)
+	}
+}
+
+func (l *Logger) WithValues(fields ...Field) *Logger {
+	newl := l.log.With(fields...)
+	return &Logger{
+		log:     newl,
+		sugared: newl.Sugar(),
 	}
 }
 

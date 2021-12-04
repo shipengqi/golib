@@ -1,6 +1,8 @@
 package log
 
 import (
+	"bufio"
+	"bytes"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -9,64 +11,107 @@ import (
 )
 
 func Test_Default_Logger(t *testing.T) {
+	r, w, _ := os.Pipe()
 	tmp := os.Stdout
 	defer func() {
 		os.Stdout = tmp
 	}()
+	os.Stdout = w
 
+	name := "world"
 	str := "Hello, world!"
-	tmpl := "Hello, %s"
-	printItems := []printItem{
-		{level: DebugLevel, tmpl: str, expected: ""},
-		{level: InfoLevel, tmpl: str, expected: str},
-		{level: WarnLevel, tmpl: str, expected: str},
-		{level: ErrorLevel, tmpl: str, expected: str},
-	}
-	printfItems := []printItem{
-		{level: DebugLevel, tmpl: tmpl, expected: "Hello, test1", value: []string{"test1"}},
-		{level: InfoLevel, tmpl: tmpl, expected: "Hello, test2", value: []string{"test2"}},
-		{level: WarnLevel, tmpl: tmpl, expected: "Hello, test3", value: []string{"test3"}},
-		{level: ErrorLevel, tmpl: tmpl, expected: "Hello, test4", value: []string{"test4"}},
-	}
 	opts := NewOptions()
 	Configure(opts)
-	testPrintf(printfItems, t)
+	Debugf("Hello, %s", name+"1")
+	Infof("Hello, %s", name+"2")
+	Warnf("Hello, %s", name+"3")
+	Errorf("Hello, %s", name+"4")
 
 	opts.ConsoleLevel = DebugLevel.String()
 	Configure(opts)
-	testPrint(printItems, t)
+	Debug(str)
+	Info(str)
+	Warn(str)
+	Error(str)
 
 	opts.DisableConsoleColor = true
 	Configure(opts)
-	testPrint(printItems, t)
-}
+	Debug(str)
+	Info(str)
+	Warn(str)
+	Error(str)
 
-type printItem struct {
-	level    Level
-	expected string
-	tmpl     string
-	value    []string
-}
-
-func testPrintf(items []printItem, t *testing.T) {
-	var r, w *os.File
-	for _, v := range items {
-		r, w, _ = os.Pipe()
-		os.Stdout = w
-		AtLevelf(v.level, v.tmpl, v.value)
-		stdout, _ := ioutil.ReadAll(r)
-		assert.Contains(t, v.expected, string(stdout))
+	expected := []string{
+		"\x1b[34mINFO\x1b[0m\tHello, world2",
+		"\x1b[33mWARN\x1b[0m\tHello, world3",
+		"\x1b[31mERROR\x1b[0m\tHello, world4",
+		"\x1b[35mDEBUG\x1b[0m\tHello, world!",
+		"\x1b[34mINFO\x1b[0m\tHello, world!",
+		"\x1b[33mWARN\x1b[0m\tHello, world!",
+		"\x1b[31mERROR\x1b[0m\tHello, world!",
+		"debug\tHello, world!",
+		"info\tHello, world!",
+		"warn\tHello, world!",
+		"error\tHello, world!",
+	}
+	_ = w.Close()
+	stdout, _ := ioutil.ReadAll(r)
+	reader := bytes.NewReader(stdout)
+	scanner := bufio.NewScanner(reader)
+	for _, v := range expected {
+		if !scanner.Scan() {
+			break
+		}
+		line := scanner.Text()
+		assert.Contains(t, line, v)
 	}
 }
 
-func testPrint(items []printItem, t *testing.T) {
-	var r, w *os.File
-	for _, v := range items {
-		r, w, _ = os.Pipe()
-		os.Stdout = w
-		AtLevel(v.level, v.tmpl, v.value)
-		stdout, _ := ioutil.ReadAll(r)
-		assert.Contains(t, v.expected, string(stdout))
-		_ = w.Close()
-	}
+func TestLogger_Panic(t *testing.T) {
+	str := "test panic"
+	opts := NewOptions()
+	Configure(opts)
+	defer func() {
+		if err := recover(); err != nil {
+			assert.Equal(t, err, str)
+		} else {
+			t.Fatal("no panic")
+		}
+	}()
+	Panic(str)
+}
+
+func TestWithValues(t *testing.T) {
+	r, w, _ := os.Pipe()
+	tmp := os.Stdout
+	defer func() {
+		os.Stdout = tmp
+	}()
+	os.Stdout = w
+	opts := NewOptions()
+	Configure(opts)
+
+	logger := WithValues(String("test key", "test value"))
+	logger.Info("Hello, world!")
+
+	_ = w.Close()
+	stdout, _ := ioutil.ReadAll(r)
+	assert.Contains(t, string(stdout), "Hello, world!\t{\"test key\": \"test value\"}")
+}
+
+func Test_Default_Logger_Without_Time(t *testing.T) {
+	r, w, _ := os.Pipe()
+	tmp := os.Stdout
+	defer func() {
+		os.Stdout = tmp
+	}()
+	os.Stdout = w
+	opts := NewOptions()
+	opts.DisableConsoleTime = true
+	Configure(opts)
+
+	Info("Hello, world!")
+	_ = w.Close()
+	stdout, _ := ioutil.ReadAll(r)
+	assert.Equal(t, "\u001B[34mINFO\u001B[0m\tHello, world!\n", string(stdout))
 }
