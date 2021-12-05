@@ -5,20 +5,29 @@ import (
 	"testing"
 
 	stderrors "errors"
+
+	pkgerrors "github.com/pkg/errors"
 )
 
-func noErrors(at, depth int) error {
+func stdErrors(at, depth int) error {
 	if at >= depth {
 		return stderrors.New("no error")
 	}
-	return noErrors(at+1, depth)
+	return stdErrors(at+1, depth)
 }
 
-func yesErrors(at, depth int) error {
+func pkgErrors(at, depth int) error {
 	if at >= depth {
-		return New("ye error")
+		return pkgerrors.New("no error")
 	}
-	return yesErrors(at+1, depth)
+	return pkgErrors(at+1, depth)
+}
+
+func golibErrors(at, depth int) error {
+	if at >= depth {
+		return WithCode(New("ye error"), 1)
+	}
+	return golibErrors(at+1, depth)
 }
 
 // GlobalE is an exported global to store the result of benchmark results,
@@ -28,28 +37,37 @@ var GlobalE interface{}
 func BenchmarkErrors(b *testing.B) {
 	type run struct {
 		stack int
-		std   bool
+		pkg   string
 	}
 	runs := []run{
-		{10, false},
-		{10, true},
-		{100, false},
-		{100, true},
-		{1000, false},
-		{1000, true},
+		{10, "std"},
+		{10, "pkg"},
+		{10, "e"},
+		{100, "std"},
+		{100, "pkg"},
+		{100, "e"},
+		{1000, "std"},
+		{1000, "pkg"},
+		{1000, "e"},
 	}
 	for _, r := range runs {
-		part := "pkg/errors"
-		if r.std {
+		var part string
+		var f func(at, depth int) error
+		switch r.pkg {
+		case "std":
 			part = "errors"
+			f = stdErrors
+		case "pkg":
+			part = "pkg/errors"
+			f = pkgErrors
+		case "e":
+			part = "golib/e"
+			f = golibErrors
+		default:
 		}
 		name := fmt.Sprintf("%s-stack-%d", part, r.stack)
 		b.Run(name, func(b *testing.B) {
 			var err error
-			f := yesErrors
-			if r.std {
-				f = noErrors
-			}
 			b.ReportAllocs()
 			for i := 0; i < b.N; i++ {
 				err = f(0, r.stack)
@@ -81,7 +99,7 @@ func BenchmarkStackFormatting(b *testing.B) {
 	for _, r := range runs {
 		name := fmt.Sprintf("%s-stack-%d", r.format, r.stack)
 		b.Run(name, func(b *testing.B) {
-			err := yesErrors(0, r.stack)
+			err := stdErrors(0, r.stack)
 			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -94,7 +112,7 @@ func BenchmarkStackFormatting(b *testing.B) {
 	for _, r := range runs {
 		name := fmt.Sprintf("%s-stacktrace-%d", r.format, r.stack)
 		b.Run(name, func(b *testing.B) {
-			err := yesErrors(0, r.stack)
+			err := stdErrors(0, r.stack)
 			st := err.(*fundamental).stack.StackTrace()
 			b.ReportAllocs()
 			b.ResetTimer()

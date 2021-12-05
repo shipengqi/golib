@@ -224,6 +224,56 @@ func TestWithMessagef(t *testing.T) {
 	}
 }
 
+func TestWithCode(t *testing.T) {
+	type run struct {
+		expected bool
+		code     int
+		err      error
+	}
+	tests := []run{
+		{true, 1, ErrUnknown},
+		{true, 1, WithCode(ErrUnknown, 2)},
+		{true, 1, WithCode(New("test1"), 1)},
+		{true, 1, WithCode(WithMessage(New("test2"), "msg2"), 1)},
+		{true, 1, WithMessage(ErrUnknown, "msg3")},
+		{true, 1, WithMessage(WithCode(ErrUnknown, 2), "msg4")},
+		{true, 1, Wrap(ErrUnknown, "msg5")},
+		{true, 1, Wrap(WithCode(WithCode(ErrUnknown, 2), 3), "msg6")},
+	}
+
+	for _, tt := range tests {
+		got := IsCode(tt.err, tt.code)
+		if got != tt.expected {
+			t.Errorf("IsCode(%s, %d): got: %v, expected %v", tt.err.Error(), tt.code, got, tt.expected)
+		}
+	}
+}
+
+func TestWithCodef(t *testing.T) {
+	type run struct {
+		expected bool
+		code     int
+		err      error
+	}
+	tests := []run{
+		{true, 1, ErrUnknown},
+		{true, 1, WithCodef(ErrUnknown, 2, "format %s", "value")},
+		{true, 1, WithCodef(New("test1"), 1, "format1 %s", "value1")},
+		{true, 1, WithCodef(WithMessage(New("test2"), "msg2"), 1, "format2 %s", "value2")},
+		{true, 1, WithMessage(ErrUnknown, "msg3")},
+		{true, 1, WithMessage(WithCodef(ErrUnknown, 2, "format4 %s", "value4"), "msg4")},
+		{true, 1, Wrap(ErrUnknown, "msg5")},
+		{true, 1, Wrap(WithCodef(WithCode(ErrUnknown, 2), 3, "format6 %s", "value6"), "msg6")},
+	}
+
+	for _, tt := range tests {
+		got := IsCode(tt.err, tt.code)
+		if got != tt.expected {
+			t.Errorf("IsCode(%s, %d): got: %v, expected %v", tt.err.Error(), tt.code, got, tt.expected)
+		}
+	}
+}
+
 // errors.New, etc values are not expected to be compared by value
 // but the change in errors#27 made them incomparable. Assert that
 // various kinds of errors have a functional equality operator, even

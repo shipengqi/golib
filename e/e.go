@@ -273,10 +273,6 @@ func (w *withMessage) Format(s fmt.State, verb rune) {
 // be returned. If the error is nil, nil will be returned without further
 // investigation.
 func Cause(err error) error {
-	type causer interface {
-		Cause() error
-	}
-
 	for err != nil {
 		cause, ok := err.(causer)
 		if !ok {
@@ -293,13 +289,15 @@ type withCode struct {
 }
 
 func (w *withCode) Error() string {
-	return fmt.Sprintf("code: %d, %s", w.code, w.cause.Error())
+	return fmt.Sprintf("code: %d: %s", w.code, w.cause.Error())
 }
 
 func (w *withCode) Cause() error { return w.cause }
 
 // Unwrap provides compatibility for Go 1.13 error chains.
 func (w *withCode) Unwrap() error { return w.cause }
+
+func (w *withCode) Code() int { return w.code }
 
 // WithCode annotates err with a code.
 // If err is nil, WithCode returns nil.
