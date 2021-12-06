@@ -95,6 +95,7 @@ package e
 import (
 	"fmt"
 	"io"
+	"strconv"
 )
 
 // New returns an error with the supplied message.
@@ -298,6 +299,21 @@ func (w *withCode) Cause() error { return w.cause }
 func (w *withCode) Unwrap() error { return w.cause }
 
 func (w *withCode) Code() int { return w.code }
+
+func (w *withCode) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		if s.Flag('+') {
+			_, _ = fmt.Fprintf(s, "%+v\n", w.Cause())
+			_, _ = io.WriteString(s, "code: ")
+			_, _ = io.WriteString(s, strconv.Itoa(w.code))
+			return
+		}
+		fallthrough
+	case 's', 'q':
+		_, _ = io.WriteString(s, w.Error())
+	}
+}
 
 // WithCode annotates err with a code.
 // If err is nil, WithCode returns nil.

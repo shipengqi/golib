@@ -1,6 +1,7 @@
 package e
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,7 +19,7 @@ func TestRegisterf(t *testing.T) {
 	t.Log(err.Error())
 }
 
-func TestRegister_Panic(t *testing.T) {
+func TestRegisterPanic(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
 			assert.Equal(t, err, "[0] already registered")
@@ -29,7 +30,7 @@ func TestRegister_Panic(t *testing.T) {
 	_ = Register(0, "SUCCESS")
 }
 
-func TestRegisterf_Panic(t *testing.T) {
+func TestRegisterfPanic(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
 			assert.Equal(t, err, "[0] already registered")
@@ -62,8 +63,6 @@ func TestIsCode(t *testing.T) {
 	}
 	for _, r := range runs {
 		got := IsCode(r.err, r.code)
-		if got != r.expected {
-			t.Errorf("IsCode(%s, %d): got: %v, expected %v", r.err.Error(), r.code, got, r.expected)
-		}
+		assert.Equal(t, got, r.expected, fmt.Sprintf("IsCode(%s, %d)", r.err.Error(), r.code))
 	}
 }
