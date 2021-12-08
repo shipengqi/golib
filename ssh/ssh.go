@@ -10,11 +10,16 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// DefaultTimeout is the default timeout of ssh client connection.
 var (
+	// DefaultUsername default user of ssh client connection.
 	DefaultUsername = "root"
-	DefaultTimeout  = 20 * time.Second
+
+	// DefaultTimeout default timeout of ssh client connection.
+	DefaultTimeout = 20 * time.Second
+
+	// DefaultPort default port of ssh client connection.
 	DefaultPort     = 22
+	DefaultProtocol = "tcp"
 )
 
 // Options for SSH Client.
@@ -41,44 +46,72 @@ func NewOptions() *Options {
 // Client SSH client.
 type Client struct {
 	*ssh.Client
-	opts *Options
-	auth ssh.AuthMethod
+	opts     *Options
+	auth     ssh.AuthMethod
+	callback ssh.HostKeyCallback
 }
 
-// New starts a new ssh connection, the host public key must be in known hosts.
-func New(opts *Options) (c *Client, err error) {
+// New creates a Client, the host public key must be in known hosts.
+func New(opts *Options) (*Client, error) {
+	var (
+		callback ssh.HostKeyCallback
+		auth     ssh.AuthMethod
+		err      error
+	)
 
-	// callback, err := DefaultKnownHosts()
-	//
-	// if err != nil {
-	// 	return
-	// }
-	var auth ssh.AuthMethod
-	if opts.UseAgent {
-		auth, err = AgentAuth()
-		return
-	} else {
-		auth, err = Auth(opts)
-		if err != nil {
-			return
-		}
+	callback, err = DefaultHostKeyCallback()
+	if err != nil {
+		return nil, err
 	}
-	c = &Client{
-		opts: opts,
-		auth: auth,
+
+	auth, err = Auth(opts)
+	if err != nil {
+		return nil, err
 	}
-	return
+
+	return &Client{
+		opts:     opts,
+		auth:     auth,
+		callback: callback,
+	}, nil
 }
 
-// Dial starts a client connection to SSH server based on Options.
-func (c *Client) Dial(proto string, opts *Options) (*ssh.Client, error) {
-	return ssh.Dial(proto, net.JoinHostPort(opts.Addr, strconv.Itoa(opts.Port)),
+// NewInsecure creates a Client that does not verify the server keys.
+func NewInsecure(opts *Options) (*Client, error) {
+	var (
+		auth ssh.AuthMethod
+		err  error
+	)
+
+	auth, err = Auth(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Client{
+		opts:     opts,
+		auth:     auth,
+		callback: ssh.InsecureIgnoreHostKey(),
+	}, nil
+}
+
+// Dial starts a client connection to the given SSH server.
+func (c *Client) Dial(opts *Options) error {
+	cli, err := ssh.Dial(DefaultProtocol,
+		net.JoinHostPort(opts.Addr, strconv.Itoa(opts.Port)),
 		&ssh.ClientConfig{
-			User:    opts.Username,
-			Auth:    []ssh.AuthMethod{c.auth},
-			Timeout: opts.Timeout,
+			User:            opts.Username,
+			Auth:            []ssh.AuthMethod{c.auth},
+			Timeout:         opts.Timeout,
+			HostKeyCallback: c.callback,
 		},
 	)
+	if err != nil {
+		return err
+	}
+	c.Client = cli
+
+	return nil
 }
 
 // Command returns the Cmd struct to execute the named program with
@@ -90,7 +123,6 @@ func (c *Client) Command(name string, args ...string) (*Cmd, error) {
 	if err != nil {
 		return nil, err
 	}
-	// defer func() { _ = session.Close() }()
 	return newCommand(session, name, args...), nil
 }
 
@@ -105,16 +137,6 @@ func (c *Client) CommandContext(ctx context.Context, name string, args ...string
 		return nil, err
 	}
 	return newCommandContext(ctx, session, name, args...), nil
-}
-
-// ExecWithContext starts a new SSH session with context and runs the cmd. It returns CombinedOutput and err if any.
-func (c *Client) ExecWithContext(ctx context.Context, name string) ([]byte, error) {
-	cmd, err := c.CommandContext(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	return cmd.CombinedOutput()
 }
 
 // NewSftp returns new sftp client and error if any.

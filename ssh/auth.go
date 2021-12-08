@@ -2,7 +2,6 @@ package ssh
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net"
 	"os"
@@ -11,21 +10,27 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
-
-// Auth returns a single auth method.
-func Auth(opts *Options) ([]ssh.AuthMethod, error) {
-	var methods []ssh.AuthMethod
+// Auth returns a single ssh.AuthMethod.
+func Auth(opts *Options) (ssh.AuthMethod, error) {
+	var (
+		auth ssh.AuthMethod
+		err  error
+	)
+	if opts.UseAgent && HasAgent() {
+		if auth, err = Agent(); err == nil {
+			return auth, nil
+		}
+	}
 	if opts.Password != "" {
-		methods = append(methods, ssh.Password(opts.Password))
+		auth = Password(opts.Password)
+		return auth, nil
 	}
 	if opts.Key != "" {
-		signer, err := GetSigner(opts.Key, opts.Passphrase)
-		if err != nil {
-			return nil, err
+		if auth, err = Key(opts.Key, opts.Passphrase); err == nil {
+			return auth, nil
 		}
-		methods = append(methods, ssh.PublicKeys(signer))
 	}
-	return methods, errors.New("no auth method")
+	return nil, errors.New("no auth method")
 }
 
 // HasAgent checks if ssh agent exists.
@@ -33,17 +38,34 @@ func HasAgent() bool {
 	return os.Getenv("SSH_AUTH_SOCK") != ""
 }
 
-// AgentAuth auth via ssh agent, (Unix systems only)
-func AgentAuth() (ssh.AuthMethod, error) {
+// Agent returns ssh.AuthMethod of ssh agent, (Unix systems only)
+func Agent() (ssh.AuthMethod, error) {
+	if !HasAgent() {
+		return nil, errors.New("no agent")
+	}
 	sshAgent, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK"))
 	if err != nil {
-		return nil, fmt.Errorf("could not find ssh agent: %w", err)
+		return nil, err
 	}
 	return ssh.PublicKeysCallback(agent.NewClient(sshAgent).Signers), nil
 }
 
+// Password returns ssh.AuthMethod of password.
+func Password(pass string) ssh.AuthMethod {
+	return ssh.Password(pass)
+}
+
+// Key returns ssh.AuthMethod from private key file.
+func Key(sshkey string, passphrase string) (ssh.AuthMethod, error) {
+	signer, err := GetSigner(sshkey, passphrase)
+	if err != nil {
+		return nil, err
+	}
+	return ssh.PublicKeys(signer), nil
+}
+
 // GetSigner returns ssh.Signer from private key file.
-func GetSigner(sshkey string, passphrase string) (signer ssh.Signer, err error) {
+func GetSigner(sshkey, passphrase string) (signer ssh.Signer, err error) {
 	data, err := ioutil.ReadFile(sshkey)
 	if err != nil {
 		return

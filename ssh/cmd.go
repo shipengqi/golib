@@ -58,6 +58,7 @@ func (c *Cmd) CombinedOutput() ([]byte, error) {
 	if c.session == nil {
 		return nil, ErrNilSession
 	}
+	defer func() { _ = c.session.Close() }()
 	return c.execute(func() ([]byte, error) {
 		return c.session.CombinedOutput(c.String())
 	})
@@ -68,6 +69,7 @@ func (c *Cmd) Output() ([]byte, error) {
 	if c.session == nil {
 		return nil, ErrNilSession
 	}
+	defer func() { _ = c.session.Close() }()
 	return c.execute(func() ([]byte, error) {
 		return c.session.Output(c.String())
 	})
@@ -78,6 +80,7 @@ func (c *Cmd) Run() error {
 	if c.session == nil {
 		return ErrNilSession
 	}
+	defer func() { _ = c.session.Close() }()
 	_, err := c.execute(func() ([]byte, error) {
 		return nil, c.session.Run(c.String())
 	})
@@ -89,6 +92,7 @@ func (c *Cmd) Start() error {
 	if c.session == nil {
 		return ErrNilSession
 	}
+	defer func() { _ = c.session.Close() }()
 	return c.session.Start(c.String())
 }
 
