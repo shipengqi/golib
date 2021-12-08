@@ -45,7 +45,7 @@ type Options struct {
 	TimeEncoder TimeEncoder `json:"time-encoder" mapstructure:"time-encoder"`
 }
 
-// NewOptions creates a Options with default parameters.
+// NewOptions creates an Options with default parameters.
 func NewOptions() *Options {
 	return &Options{
 		DisableFile:     true,
