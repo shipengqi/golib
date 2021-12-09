@@ -1,8 +1,10 @@
-package ssh
+package gssh
 
 import (
 	"context"
+	"io"
 	"net"
+	"os"
 	"strconv"
 	"time"
 
@@ -24,14 +26,14 @@ var (
 
 // Options for SSH Client.
 type Options struct {
-	Username   string
-	Password   string
-	Key        string
-	Passphrase string
-	Addr       string
-	Port       int
-	UseAgent   bool
-	Timeout    time.Duration
+	Username    string
+	Password    string
+	Key         string
+	Passphrase  string
+	Addr        string
+	Port        int
+	UseAgent    bool
+	Timeout     time.Duration
 }
 
 // NewOptions creates an Options with default parameters.
@@ -46,6 +48,7 @@ func NewOptions() *Options {
 // Client SSH client.
 type Client struct {
 	*ssh.Client
+	sftp     *sftp.Client
 	opts     *Options
 	auth     ssh.AuthMethod
 	callback ssh.HostKeyCallback
@@ -53,31 +56,21 @@ type Client struct {
 
 // New creates a Client, the host public key must be in known hosts.
 func New(opts *Options) (*Client, error) {
-	var (
-		callback ssh.HostKeyCallback
-		auth     ssh.AuthMethod
-		err      error
-	)
-
-	callback, err = DefaultHostKeyCallback()
+	callback, err := DefaultHostKeyCallback()
 	if err != nil {
 		return nil, err
 	}
 
-	auth, err = Auth(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{
-		opts:     opts,
-		auth:     auth,
-		callback: callback,
-	}, nil
+	return NewClientWithCallback(opts, callback)
 }
 
 // NewInsecure creates a Client that does not verify the server keys.
 func NewInsecure(opts *Options) (*Client, error) {
+	return NewClientWithCallback(opts, ssh.InsecureIgnoreHostKey())
+}
+
+// NewClientWithCallback creates a Client with ssh.HostKeyCallback.
+func NewClientWithCallback(opts *Options, callback ssh.HostKeyCallback) (*Client, error) {
 	var (
 		auth ssh.AuthMethod
 		err  error
@@ -88,29 +81,35 @@ func NewInsecure(opts *Options) (*Client, error) {
 		return nil, err
 	}
 
-	return &Client{
+	c := &Client{
 		opts:     opts,
 		auth:     auth,
-		callback: ssh.InsecureIgnoreHostKey(),
-	}, nil
+		callback: callback,
+	}
+
+	err = c.Dial(opts)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
 }
 
 // Dial starts a client connection to the given SSH server.
 func (c *Client) Dial(opts *Options) error {
-	cli, err := ssh.Dial(DefaultProtocol,
-		net.JoinHostPort(opts.Addr, strconv.Itoa(opts.Port)),
-		&ssh.ClientConfig{
-			User:            opts.Username,
-			Auth:            []ssh.AuthMethod{c.auth},
-			Timeout:         opts.Timeout,
-			HostKeyCallback: c.callback,
-		},
-	)
+	cli, err := c.dial(opts)
 	if err != nil {
 		return err
 	}
 	c.Client = cli
 
+	return nil
+}
+
+func (c *Client) Ping() error {
+	_, err := c.dial(c.opts)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -144,7 +143,70 @@ func (c *Client) NewSftp(opts ...sftp.ClientOption) (*sftp.Client, error) {
 	return sftp.NewClient(c.Client, opts...)
 }
 
+// Upload equivalent to the command `scp <local file> <host>:<remote file>`
+func (c Client) Upload(lpath, rpath string) (err error) {
+	local, err := os.Open(lpath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = local.Close() }()
+
+	ftp, err := c.NewSftp()
+	if err != nil {
+		return
+	}
+	defer func() { _ = ftp.Close() }()
+
+	remote, err := ftp.Create(rpath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = remote.Close() }()
+
+	_, err = io.Copy(remote, local)
+	return
+}
+
+// Download equivalent to the command `scp <host>:<remote file> <local file>`
+func (c Client) Download(rpath, lpath string) (err error) {
+	local, err := os.Create(lpath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = local.Close() }()
+
+	ftp, err := c.NewSftp()
+	if err != nil {
+		return
+	}
+	defer func() { _ = ftp.Close() }()
+
+	remote, err := ftp.Open(rpath)
+	if err != nil {
+		return
+	}
+	defer func() { _ = remote.Close() }()
+
+	if _, err = io.Copy(local, remote); err != nil {
+		return
+	}
+
+	return local.Sync()
+}
+
 // Close client net connection.
 func (c *Client) Close() error {
 	return c.Client.Close()
+}
+
+func (c *Client) dial(opts *Options) (*ssh.Client, error) {
+	return ssh.Dial(DefaultProtocol,
+		net.JoinHostPort(opts.Addr, strconv.Itoa(opts.Port)),
+		&ssh.ClientConfig{
+			User:            opts.Username,
+			Auth:            []ssh.AuthMethod{c.auth},
+			Timeout:         opts.Timeout,
+			HostKeyCallback: c.callback,
+		},
+	)
 }

@@ -22,6 +22,12 @@ SOFTWARE.
 
 Other dependencies and licenses:
 
+Open Source Software Licensed Under the MIT License:
+--------------------------------------------------------------------
+1. melbahja/goph
+Copyright (c) 2020-present Mohamed El Bahja
+
+
 Open Source Software Licensed Under the BSD 2-Clause License:
 --------------------------------------------------------------------
 1. pkg/errors
