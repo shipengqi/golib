@@ -1,6 +1,8 @@
 # gssh
 
-## Usage
+A simple SSH client for Go.
+
+## Quick Start
 
 Run a command via ssh:
 ```go
@@ -100,10 +102,6 @@ file.Write([]byte(`Hello world`))
 file.Close()
 ```
 For more file operations see [SFTP Docs](https://github.com/pkg/sftp).
-
-## Documentation
-
-You can find the docs at [go docs](https://pkg.go.dev/github.com/shipengqi/golib/gssh).
 
 ## Test
 

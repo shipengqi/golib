@@ -1,4 +1,4 @@
-// Package gssh provides a simple SSH client in Go.
+// Package gssh provides a simple SSH client for Go.
 package gssh
 
 import (

@@ -5,8 +5,8 @@ import (
 	"os/exec"
 )
 
-func hostname() (name string, err error) {
-	cmd := exec.Command("/bin/hostname", "-f")
+func fqdn() (name string, err error) {
+	cmd := exec.Command("hostname", "-f")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err = cmd.Run()

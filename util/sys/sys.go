@@ -1,5 +1,5 @@
 package sys
 
-func Hostname() (string, error) {
-	return hostname()
+func FQDN() (string, error) {
+	return fqdn()
 }
