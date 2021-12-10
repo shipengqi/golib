@@ -21,14 +21,14 @@ func Auth(opts *Options) (ssh.AuthMethod, error) {
 			return auth, nil
 		}
 	}
-	if opts.Password != "" {
-		auth = Password(opts.Password)
-		return auth, nil
-	}
 	if opts.Key != "" {
 		if auth, err = Key(opts.Key, opts.Passphrase); err == nil {
 			return auth, nil
 		}
+	}
+	if opts.Password != "" {
+		auth = Password(opts.Password)
+		return auth, nil
 	}
 	return nil, errors.New("no auth method")
 }

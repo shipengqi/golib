@@ -1,3 +1,4 @@
+// Package log is a structured logger for Go, based on https://github.com/uber-go/zap.
 package log
 
 import "go.uber.org/zap"

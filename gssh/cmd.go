@@ -1,8 +1,10 @@
 package gssh
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"io"
 	"strings"
 
 	"golang.org/x/crypto/ssh"
@@ -11,6 +13,8 @@ import (
 var (
 	ErrNilSession = errors.New("could not start with nil session, use SetSession() to set a session")
 )
+
+type PrintFunction = func(record string)
 
 // Cmd represents an external command being prepared or run.
 //
@@ -53,7 +57,8 @@ func newCommandContext(ctx context.Context, session *ssh.Session, name string, a
 	return cmd
 }
 
-// CombinedOutput runs cmd on the remote host and returns its combined stdout and stderr.
+// CombinedOutput runs cmd on the remote host and returns its combined
+// standard output and standard error.
 func (c *Cmd) CombinedOutput() ([]byte, error) {
 	if c.session == nil {
 		return nil, ErrNilSession
@@ -64,7 +69,7 @@ func (c *Cmd) CombinedOutput() ([]byte, error) {
 	})
 }
 
-// Output runs cmd on the remote host and returns its stdout.
+// Output runs cmd on the remote host and returns its standard output.
 func (c *Cmd) Output() ([]byte, error) {
 	if c.session == nil {
 		return nil, ErrNilSession
@@ -73,6 +78,36 @@ func (c *Cmd) Output() ([]byte, error) {
 	return c.execute(func() ([]byte, error) {
 		return c.session.Output(c.String())
 	})
+}
+
+// OutputPipe runs cmd on the remote host and prints its standard output by the given callback PrintFunction.
+func (c *Cmd) OutputPipe(callback PrintFunction) error {
+	if c.session == nil {
+		return ErrNilSession
+	}
+	defer func() { _ = c.session.Close() }()
+
+	stdout, err := c.session.StdoutPipe()
+	if err != nil {
+		return err
+	}
+	err = c.session.Start(c.String())
+	if err != nil {
+		return err
+	}
+	reader := bufio.NewReader(stdout)
+	for {
+		line, _, rerr := reader.ReadLine()
+		if rerr != nil || io.EOF == rerr {
+			break
+		}
+		callback(string(line))
+	}
+	err = c.session.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Run runs cmd on the remote host.
@@ -111,6 +146,9 @@ func (c *Cmd) String() string {
 // env specifies the environment of the process.
 // Each entry is of the form "key=value", and will be ignored if it is not.
 func (c *Cmd) Setenv(env []string) (err error) {
+	if c.session == nil {
+		return ErrNilSession
+	}
 	var kv []string
 	for _, value := range env {
 		kv = strings.SplitN(value, "=", 2)

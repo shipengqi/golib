@@ -1,3 +1,4 @@
+// Package gssh provides a simple SSH client in Go.
 package gssh
 
 import (
@@ -26,14 +27,14 @@ var (
 
 // Options for SSH Client.
 type Options struct {
-	Username    string
-	Password    string
-	Key         string
-	Passphrase  string
-	Addr        string
-	Port        int
-	UseAgent    bool
-	Timeout     time.Duration
+	Username   string
+	Password   string
+	Key        string
+	Passphrase string
+	Addr       string
+	Port       int
+	UseAgent   bool
+	Timeout    time.Duration
 }
 
 // NewOptions creates an Options with default parameters.
@@ -113,6 +114,32 @@ func (c *Client) Ping() error {
 	return nil
 }
 
+// CombinedOutput runs cmd on the remote host and returns its combined
+// standard output and standard error.
+func (c *Client) CombinedOutput(command string) ([]byte, error) {
+	session, err := c.NewSession()
+	if err != nil {
+		return nil, err
+	}
+
+	defer func() { _ = session.Close() }()
+
+	return session.CombinedOutput(command)
+}
+
+// CombinedOutputContext is like CombinedOutput but includes a context.
+//
+// The provided context is used to kill the process (by calling
+// os.Process.Kill) if the context becomes done before the command
+// completes on its own.
+func (c *Client) CombinedOutputContext(ctx context.Context, command string) ([]byte, error) {
+	cmd, err := c.CommandContext(ctx, command)
+	if err != nil {
+		return nil, err
+	}
+	return cmd.CombinedOutput()
+}
+
 // Command returns the Cmd struct to execute the named program with
 // the given arguments.
 //
@@ -144,7 +171,7 @@ func (c *Client) NewSftp(opts ...sftp.ClientOption) (*sftp.Client, error) {
 }
 
 // Upload equivalent to the command `scp <local file> <host>:<remote file>`
-func (c Client) Upload(lpath, rpath string) (err error) {
+func (c *Client) Upload(lpath, rpath string) (err error) {
 	local, err := os.Open(lpath)
 	if err != nil {
 		return
@@ -168,7 +195,7 @@ func (c Client) Upload(lpath, rpath string) (err error) {
 }
 
 // Download equivalent to the command `scp <host>:<remote file> <local file>`
-func (c Client) Download(rpath, lpath string) (err error) {
+func (c *Client) Download(rpath, lpath string) (err error) {
 	local, err := os.Create(lpath)
 	if err != nil {
 		return
