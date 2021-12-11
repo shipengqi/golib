@@ -2,8 +2,20 @@ package sys
 
 import (
 	"bytes"
+	"os"
 	"os/exec"
+	"syscall"
 )
+
+// Kill kills process by pid
+func Kill(pid int) error {
+	return syscall.Kill(pid, syscall.SIGTERM)
+}
+
+// PID get process ID
+func PID() int {
+	return os.Getpid()
+}
 
 func fqdn() (name string, err error) {
 	cmd := exec.Command("hostname", "-f")
@@ -14,6 +26,7 @@ func fqdn() (name string, err error) {
 		return
 	}
 	name = out.String()
-	name = name[:len(name)-1] // removing EOL
+	// removing EOL
+	name = name[:len(name)-1]
 	return
 }

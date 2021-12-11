@@ -1,1 +1,5 @@
 package net
+
+func LocalIP() {
+
+}
