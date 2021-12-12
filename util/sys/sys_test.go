@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPID(t *testing.T) {
-	assert.True(t, PID() > 0)
+func TestIsBigEndian(t *testing.T) {
+	got := IsBigEndian()
+	assert.False(t, got)
 }

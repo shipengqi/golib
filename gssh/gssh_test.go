@@ -26,7 +26,7 @@ func TestGSSHInsecure(t *testing.T) {
 	t.Run("TestClientCmd", insecure(t, cliCmdTest))
 }
 
-func insecure(t *testing.T, callback func(t *testing.T, cli *Client)) func (t *testing.T) {
+func insecure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *testing.T) {
 	opts := NewOptions()
 	opts.Username = user
 	opts.Password = passwd
@@ -42,7 +42,7 @@ func insecure(t *testing.T, callback func(t *testing.T, cli *Client)) func (t *t
 	}
 }
 
-func secure(t *testing.T, callback func(t *testing.T, cli *Client)) func (t *testing.T) {
+func secure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *testing.T) {
 	opts := NewOptions()
 	opts.Username = user
 	opts.Password = passwd
@@ -87,9 +87,9 @@ func outPipeTest(t *testing.T, cli *Client) {
 		t.Fatal(err)
 	}
 	var lines []string
-	err = cmd.OutputPipe(func(record string) {
-		// t.Log(record)
-		lines = append(lines, record)
+	err = cmd.OutputPipe(func(line string) {
+		// t.Log(line)
+		lines = append(lines, line)
 	})
 	if err != nil {
 		t.Fatal(err)

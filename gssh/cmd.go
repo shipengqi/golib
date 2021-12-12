@@ -14,7 +14,7 @@ var (
 	ErrNilSession = errors.New("could not start with nil session, use SetSession() to set a session")
 )
 
-type PrintFunction = func(record string)
+type LoggingCallback func(line string)
 
 // Cmd represents an external command being prepared or run.
 //
@@ -80,8 +80,8 @@ func (c *Cmd) Output() ([]byte, error) {
 	})
 }
 
-// OutputPipe runs cmd on the remote host and prints its standard output by the given callback PrintFunction.
-func (c *Cmd) OutputPipe(callback PrintFunction) error {
+// OutputPipe runs cmd on the remote host and prints its standard output by the given callback LoggingCallback.
+func (c *Cmd) OutputPipe(callback LoggingCallback) error {
 	if c.session == nil {
 		return ErrNilSession
 	}
@@ -103,11 +103,7 @@ func (c *Cmd) OutputPipe(callback PrintFunction) error {
 		}
 		callback(string(line))
 	}
-	err = c.session.Wait()
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.session.Wait()
 }
 
 // Run runs cmd on the remote host.

@@ -2,6 +2,7 @@ package sys
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -15,6 +16,13 @@ func Kill(pid int) error {
 // PID get process ID
 func PID() int {
 	return os.Getpid()
+}
+
+// GetProcessByPid 根据PID获取进程的执行路径.
+func GetProcessByPid(pid int) string {
+	exe := fmt.Sprintf("/proc/%d/exe", pid)
+	path, _ := os.Readlink(exe)
+	return path
 }
 
 func fqdn() (name string, err error) {

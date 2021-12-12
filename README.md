@@ -6,13 +6,14 @@ Common libraries for Go.
 - <https://github.com/marmotedu/geekbang-go>
 - <https://github.com/marmotedu/log>
 - <https://github.com/gookit/goutil>
+- <https://github.com/thinkeridea/go-extend>
 - <https://github.com/henrylee2cn/goutil>
 - <https://github.com/notaryproject/notary/blob/master/tuf/utils/x509.go>
 - <https://github.com/labstack/gommon>
-- <https://github.com/rfyiamcool/golib>
+- <https://github.com/rfyiamcool/golib> retry goid
 - <https://github.com/shurcooL/go>
 - <https://github.com/tgulacsi/go>
-- <https://github.com/gruntwork-io/go-commons>
+- <https://github.com/gruntwork-io/go-commons> retry
 - <https://github.com/xgfone/go-tools>
 - <https://github.com/bitrise-io/go-utils>
 - <https://github.com/billmi/go-utils>
