@@ -1,3 +1,4 @@
+// Package recovery provides a recover function
 package recovery
 
 import "github.com/shipengqi/golib/e"
