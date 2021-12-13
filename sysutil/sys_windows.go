@@ -1,4 +1,4 @@
-package sys
+package sysutil
 
 import "os"
 

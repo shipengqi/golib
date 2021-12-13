@@ -1,4 +1,5 @@
-package net
+// Package netutil is common network utils for Go.
+package netutil
 
 import (
 	"math"

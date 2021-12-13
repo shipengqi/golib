@@ -123,6 +123,8 @@ type fundamental struct {
 	*stack
 }
 
+func (f *fundamental) Stack() []uintptr { return *f.stack }
+
 func (f *fundamental) Error() string { return f.msg }
 
 func (f *fundamental) Format(s fmt.State, verb rune) {
@@ -157,6 +159,8 @@ type withStack struct {
 	error
 	*stack
 }
+
+func (w *withStack) Stack() []uintptr { return *w.stack }
 
 func (w *withStack) Cause() error { return w.error }
 
