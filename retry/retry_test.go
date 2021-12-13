@@ -3,10 +3,11 @@ package retry
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRetry(t *testing.T) {
@@ -42,6 +43,6 @@ func TestRetry(t *testing.T) {
 				return errors.New("test err")
 			})
 		assert.Equal(t, "test err", strings.TrimSpace(err.Error()))
-		assert.Equal(t, 3, count)
+		assert.True(t, count >= 2)
 	})
 }
