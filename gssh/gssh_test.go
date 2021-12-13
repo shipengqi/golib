@@ -115,11 +115,13 @@ func envTest(t *testing.T, cli *Client) {
 }
 
 func TestMain(m *testing.M) {
-	flag.StringVar(&addr, "addr", "localhost", "The host of ssh")
+	flag.StringVar(&addr, "addr", "", "The host of ssh")
 	flag.StringVar(&user, "user", "root", "The username of client")
 	flag.StringVar(&passwd, "pass", "", "The password of user")
 	flag.StringVar(&key, "ssh-key", "", "The location of private key")
 
 	flag.Parse()
-	os.Exit(m.Run())
+	if addr != "" {
+		os.Exit(m.Run())
+	}
 }

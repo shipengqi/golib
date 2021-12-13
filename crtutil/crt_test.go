@@ -11,11 +11,11 @@ import (
 )
 
 func TestParseCrtFile(t *testing.T) {
-	crt, err := ParseCertFile("testdata/server.crt")
+	_, err := ParseCertFile("testdata/server.crt")
 	if err != nil {
 		t.Fatal(err)
 	}
-	printCrt(t, crt, "server")
+	// printCrt(t, crt, "server")
 }
 
 func TestParseCrtSetFile(t *testing.T) {
@@ -24,27 +24,18 @@ func TestParseCrtSetFile(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 2, len(crts))
-	for i, crt := range crts {
-		printCrt(t, crt, fmt.Sprintf("server-ca-%d", i))
-	}
 
 	crts, err = ParseCertChainFile("testdata/server-3layers.crt")
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 3, len(crts))
-	for i, crt := range crts {
-		printCrt(t, crt, fmt.Sprintf("server-3layers-%d", i))
-	}
 
 	crts, err = ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
 	if err != nil {
 		t.Fatal(err)
 	}
 	assert.Equal(t, 3, len(crts))
-	for i, crt := range crts {
-		printCrt(t, crt, fmt.Sprintf("server-3layers-withcharacters-%d", i))
-	}
 }
 
 func TestCertChainToPEM(t *testing.T) {
@@ -57,7 +48,7 @@ func TestCertChainToPEM(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("\n%s", got)
+	assert.NotEmpty(t, got)
 }
 
 func TestCertToPEM(t *testing.T) {
@@ -66,7 +57,7 @@ func TestCertToPEM(t *testing.T) {
 		t.Fatal(err)
 	}
 	got := CertToPEM(crt)
-	t.Logf("\n%s", got)
+	assert.NotEmpty(t, got)
 }
 
 func printCrt(t *testing.T, cert *x509.Certificate, name string) {

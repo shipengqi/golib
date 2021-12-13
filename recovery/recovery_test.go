@@ -1,18 +1,19 @@
 package recovery
 
 import (
-	"github.com/shipengqi/golib/e"
+	stderrors "errors"
+	"github.com/stretchr/testify/assert"
 	"testing"
 
-	stderrors "errors"
-
 	pkgerrors "github.com/pkg/errors"
+
+	"github.com/shipengqi/golib/e"
 )
 
 func TestRecovery(t *testing.T) {
 	var testRecover = func(err error) {
-		t.Logf("[recover panic]: %+v",
-			err)
+		_, ok := err.(e.Callers)
+		assert.True(t, ok)
 	}
 
 	t.Run("error string", func(t *testing.T) {

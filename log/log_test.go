@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Default_Logger(t *testing.T) {
+func TestDefaultLogger(t *testing.T) {
 	r, w, _ := os.Pipe()
 	tmp := os.Stdout
 	defer func() {
@@ -67,7 +67,7 @@ func Test_Default_Logger(t *testing.T) {
 	}
 }
 
-func TestLogger_Panic(t *testing.T) {
+func TestLoggerPanic(t *testing.T) {
 	str := "test panic"
 	opts := NewOptions()
 	Configure(opts)
@@ -99,7 +99,7 @@ func TestWithValues(t *testing.T) {
 	assert.Contains(t, string(stdout), "Hello, world!\t{\"test key\": \"test value\"}")
 }
 
-func Test_Default_Logger_Without_Time(t *testing.T) {
+func TestDefaultLoggerWithoutTime(t *testing.T) {
 	r, w, _ := os.Pipe()
 	tmp := os.Stdout
 	defer func() {

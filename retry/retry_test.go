@@ -11,11 +11,13 @@ import (
 
 func TestRetry(t *testing.T) {
 	t.Run("retry with interval", func(t *testing.T) {
+		var count int
 		err := Times(5).WithInterval(time.Second).Do(func() error {
-			t.Logf("retry at: %s", time.Now())
+			count++
 			return nil
 		})
 		assert.NoError(t, err)
+		assert.Equal(t, 1, count)
 	})
 
 	t.Run("retry with interval and err", func(t *testing.T) {
