@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -114,4 +115,19 @@ func TestDefaultLoggerWithoutTime(t *testing.T) {
 	_ = w.Close()
 	stdout, _ := ioutil.ReadAll(r)
 	assert.Equal(t, "\u001B[34mINFO\u001B[0m\tHello, world!\n", string(stdout))
+}
+
+func TestLoggerFile(t *testing.T)  {
+	tmp := os.TempDir()
+	opts := NewOptions()
+	opts.DisableConsole = true
+	opts.DisableFile = false
+	opts.Output = tmp
+	opts.FilenameEncoder = func() string {
+		return "test.log"
+	}
+	Configure(opts)
+	Info("Hello, world!")
+	assert.Equal(t, filepath.Join(tmp, "test.log"), EncodedFilename)
+	_ = os.Remove(EncodedFilename)
 }

@@ -23,9 +23,10 @@ func DefaultTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
 }
 
-func rollingfileEncoder(opts *Options) zapcore.WriteSyncer {
+func rollingFileEncoder(opts *Options) zapcore.WriteSyncer {
 	encoded := opts.FilenameEncoder()
 	f := filepath.Join(opts.Output, encoded)
+	EncodedFilename = f
 	if opts.DisableRotate {
 		fd, err := os.OpenFile(f, os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_SYNC, 0644)
 		if err != nil {

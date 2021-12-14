@@ -4,7 +4,9 @@ package log
 import "go.uber.org/zap"
 
 var (
-	defaultLogger *Logger
+	defaultLogger   *Logger
+	// EncodedFilename filename for logging when DisableFile is false
+	EncodedFilename string
 )
 
 func init() {

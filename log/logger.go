@@ -59,6 +59,9 @@ func New(opts *Options) *Logger {
 
 	if !opts.DisableFile {
 		var fileLevel Level
+		if opts.FileLevel == "" {
+			opts.FileLevel = InfoLevel.String()
+		}
 		err := fileLevel.Set(strings.ToLower(opts.FileLevel))
 		if err != nil {
 			fileLevel = InfoLevel
@@ -74,7 +77,7 @@ func New(opts *Options) *Logger {
 		fileLevelEnabler := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 			return lvl >= fileLevel
 		})
-		cores = append(cores, zapcore.NewCore(fileEncoder, rollingfileEncoder(opts), fileLevelEnabler))
+		cores = append(cores, zapcore.NewCore(fileEncoder, rollingFileEncoder(opts), fileLevelEnabler))
 	}
 	core := zapcore.NewTee(cores...)
 	unsugared := zap.New(core)

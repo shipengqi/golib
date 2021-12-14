@@ -37,7 +37,7 @@ type Options struct {
 	// FileLevel sets the file logger level.
 	FileLevel string `json:"file-level" mapstructure:"file-level"`
 
-	// Output directory for logging when FileEnabled is true
+	// Output directory for logging when DisableFile is false
 	Output string `json:"output" mapstructure:"output"`
 	// FilenameEncoder log filename encoder
 	FilenameEncoder FilenameEncoder `json:"filename-encoder" mapstructure:"filename-encoder"`
