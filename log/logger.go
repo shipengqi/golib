@@ -22,7 +22,6 @@ func New(opts *Options) *Logger {
 	var cores []zapcore.Core
 
 	encoderConfig := zapcore.EncoderConfig{
-		LevelKey:       "level",
 		NameKey:        "logger",
 		MessageKey:     "msg",
 		StacktraceKey:  "stack",
@@ -30,9 +29,6 @@ func New(opts *Options) *Logger {
 		EncodeLevel:    zapcore.LowercaseLevelEncoder,
 		EncodeDuration: zapcore.MillisDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
-	}
-	if !opts.DisableCaller {
-		encoderConfig.CallerKey = "caller"
 	}
 	if opts.TimeEncoder != nil {
 		encoderConfig.EncodeTime = opts.TimeEncoder
@@ -44,8 +40,14 @@ func New(opts *Options) *Logger {
 			consoleLevel = InfoLevel
 		}
 		consoleEncCfg := encoderConfig
+		if !opts.DisableConsoleLevel {
+			consoleEncCfg.LevelKey = "level"
+		}
 		if !opts.DisableConsoleTime {
 			consoleEncCfg.TimeKey = "time"
+		}
+		if !opts.DisableConsoleCaller {
+			consoleEncCfg.CallerKey = "caller"
 		}
 		if !opts.DisableConsoleColor {
 			consoleEncCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
@@ -66,8 +68,13 @@ func New(opts *Options) *Logger {
 		if err != nil {
 			fileLevel = InfoLevel
 		}
+		// Add level key for file log by default
+		encoderConfig.LevelKey = "level"
 		if !opts.DisableFileTime {
 			encoderConfig.TimeKey = "time"
+		}
+		if !opts.DisableFileCaller {
+			encoderConfig.CallerKey = "caller"
 		}
 		fileEncoder := zapcore.NewConsoleEncoder(encoderConfig)
 		if !opts.DisableFileJson {

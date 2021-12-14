@@ -12,16 +12,19 @@ type Options struct {
 	DisableConsoleColor bool `json:"disable-console-color" mapstructure:"disable-console-color"`
 	// DisableConsoleTime Whether to add a time
 	DisableConsoleTime bool `json:"disable-console-time" mapstructure:"disable-console-time"`
+	// DisableConsoleLevel Whether to add a level
+	DisableConsoleLevel bool `json:"disable-console-level" mapstructure:"disable-console-level"`
+	// DisableConsoleCaller whether to log caller info
+	DisableConsoleCaller bool `json:"disable-console-caller" mapstructure:"disable-console-caller"`
+
 	// DisableFile whether to log to file
 	DisableFile bool `json:"disable-file" mapstructure:"disable-file"`
-
 	// DisableFileJson whether to enable json format for log file
 	DisableFileJson bool `json:"disable-file-json" mapstructure:"disable-file-json"`
 	// DisableFileTime Whether to add a time
 	DisableFileTime bool `json:"disable-file-time" mapstructure:"disable-file-time"`
-
-	// DisableCaller whether to log caller info
-	DisableCaller bool `json:"disable-caller" mapstructure:"disable-caller"`
+	// DisableFileCaller whether to log caller info
+	DisableFileCaller bool `json:"disable-file-caller" mapstructure:"disable-file-caller"`
 
 	// DisableRotate whether to enable log file rotate
 	DisableRotate bool `json:"disable-rotate" mapstructure:"disable-rotate"`
@@ -48,11 +51,13 @@ type Options struct {
 // NewOptions creates an Options with default parameters.
 func NewOptions() *Options {
 	return &Options{
-		DisableFile:     true,
-		DisableRotate:   true,
-		ConsoleLevel:    InfoLevel.String(),
-		FilenameEncoder: DefaultFilenameEncoder,
-		TimeEncoder:     DefaultTimeEncoder,
+		DisableFile:          true,
+		DisableRotate:        true,
+		DisableConsoleCaller: true,
+		DisableFileCaller:    true,
+		ConsoleLevel:         InfoLevel.String(),
+		FilenameEncoder:      DefaultFilenameEncoder,
+		TimeEncoder:          DefaultTimeEncoder,
 	}
 }
 
