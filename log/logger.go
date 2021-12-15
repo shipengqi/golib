@@ -94,6 +94,14 @@ func New(opts *Options) *Logger {
 	}
 }
 
+func (l *Logger) DebugLogger() DebugLogger {
+	return l
+}
+
+func (l *Logger) InfoLogger() InfoLogger {
+	return l
+}
+
 func (l *Logger) Debugt(msg string, fields ...Field) {
 	l.log.Debug(msg, fields...)
 }

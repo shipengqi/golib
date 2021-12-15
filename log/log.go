@@ -13,14 +13,23 @@ func init() {
 	defaultLogger = New(NewOptions())
 }
 
-type Interface interface {
+type DebugLogger interface {
 	Debugt(msg string, fields ...Field)
 	Debugf(template string, args ...interface{})
 	Debug(msg string, keysAndValues ...interface{})
+}
+
+type InfoLogger interface {
+	DebugLogger
 
 	Infot(msg string, fields ...Field)
 	Infof(template string, args ...interface{})
 	Info(msg string, keysAndValues ...interface{})
+}
+
+
+type Interface interface {
+	InfoLogger
 
 	Warnt(msg string, fields ...Field)
 	Warnf(template string, args ...interface{})
