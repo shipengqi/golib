@@ -17,6 +17,16 @@ var (
 
 func TestGSSH(t *testing.T) {
 	t.Run("TestPassAuth", secure(t, authTest))
+	t.Run("Ping", func(t *testing.T) {
+		err := Ping(addr, user, passwd, key)
+		assert.NoError(t, err)
+	})
+	t.Run("Ping error", func(t *testing.T) {
+		err := Ping(addr, user, "error", key)
+		if err != nil {
+			assert.Contains(t, err.Error(), "ssh: unable to authenticate")
+		}
+	})
 }
 
 func TestGSSHInsecure(t *testing.T) {
@@ -34,9 +44,9 @@ func insecure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *te
 	opts.Key = key
 
 	cli, err := NewInsecure(opts)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
+	err = cli.Dial()
+	assert.NoError(t, err)
 	return func(t *testing.T) {
 		callback(t, cli)
 	}
@@ -49,10 +59,11 @@ func secure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *test
 	opts.Addr = addr
 	opts.Key = key
 
-	cli, err := NewClientWithCallback(opts, AutoFixedHostKeyCallback)
-	if err != nil {
-		t.Fatal(err)
-	}
+	cli, err := New(opts)
+	assert.NoError(t, err)
+	cli.WithHostKeyCallback(AutoFixedHostKeyCallback)
+	err = cli.Dial()
+	assert.NoError(t, err)
 	return func(t *testing.T) {
 		callback(t, cli)
 	}
@@ -60,56 +71,40 @@ func secure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *test
 
 func cliCmdTest(t *testing.T, cli *Client) {
 	output, err := cli.CombinedOutput("echo \"Hello, world!\"")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello, world!\n", string(output))
 }
 
 func authTest(t *testing.T, cli *Client) {
 	cmd, err := cli.Command("echo", "Hello, world!")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	output, err := cmd.Output()
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello, world!\n", string(output))
 }
 
 func outPipeTest(t *testing.T, cli *Client) {
 	cmd, err := cli.Command("n=1;while [ $n -le 4 ];do echo $n;((n++));done")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	var lines []string
 	err = cmd.OutputPipe(func(line string) {
 		// t.Log(line)
 		lines = append(lines, line)
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
 }
 
 func envTest(t *testing.T, cli *Client) {
 	cmd, err := cli.Command("echo", "Hello, $TEST_ENV_NAME!")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	err = cmd.Setenv([]string{"TEST_ENV_NAME=GSSH"})
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	output, err := cmd.Output()
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
 	assert.Equal(t, "Hello, GSSH!\n", string(output))
 }

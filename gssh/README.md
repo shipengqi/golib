@@ -35,7 +35,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+	err = cli.Dial()
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer func() { _ = cli.Close() }()
 	
 	cmd, err := cli.Command("echo", "Hello, world!")

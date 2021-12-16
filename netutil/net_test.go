@@ -23,9 +23,7 @@ func TestIsIPV4(t *testing.T) {
 
 func TestLocalIP(t *testing.T) {
 	got, err := LocalIP()
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.True(t, len(got) > 0)
 }
 

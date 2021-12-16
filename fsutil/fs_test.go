@@ -12,13 +12,9 @@ func TestCopy(t *testing.T) {
 	dst := "testdata/dst"
 	defer func() { _ = os.RemoveAll(dst) }()
 	err := Copy(src, dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	entries, err := os.ReadDir(dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	var names []string
 	for _, fd := range entries {
 		names = append(names, fd.Name())
@@ -35,13 +31,9 @@ func TestCleanDir(t *testing.T) {
 	dst := "testdata/dst"
 	defer func() { _ = os.RemoveAll(dst) }()
 	err := Copy(src, dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	entries, err := os.ReadDir(dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	var names []string
 	for _, fd := range entries {
 		names = append(names, fd.Name())
@@ -52,12 +44,8 @@ func TestCleanDir(t *testing.T) {
 		"b.txt",
 	}, names)
 	err = CleanDir(dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	entries, err = os.ReadDir(dst)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, 0, len(entries))
 }

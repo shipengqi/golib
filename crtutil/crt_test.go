@@ -12,50 +12,36 @@ import (
 
 func TestParseCrtFile(t *testing.T) {
 	_, err := ParseCertFile("testdata/server.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	// printCrt(t, crt, "server")
 }
 
 func TestParseCrtSetFile(t *testing.T) {
 	crts, err := ParseCertChainFile("testdata/server-ca.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, 2, len(crts))
 
 	crts, err = ParseCertChainFile("testdata/server-3layers.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 
 	crts, err = ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 }
 
 func TestCertChainToPEM(t *testing.T) {
 	crts, err := ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 	got, err := CertChainToPEM(crts)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	assert.NotEmpty(t, got)
 }
 
 func TestCertToPEM(t *testing.T) {
 	crt, err := ParseCertFile("testdata/server.crt")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 	got := CertToPEM(crt)
 	assert.NotEmpty(t, got)
 }

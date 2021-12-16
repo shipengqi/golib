@@ -55,23 +55,32 @@ type Client struct {
 	callback ssh.HostKeyCallback
 }
 
-// New creates a Client, the host public key must be in known hosts.
-func New(opts *Options) (*Client, error) {
+// NewDefault creates a Client with DefaultHostKeyCallback, the host public key must be in known hosts.
+func NewDefault(opts *Options) (*Client, error) {
 	callback, err := DefaultHostKeyCallback()
 	if err != nil {
 		return nil, err
 	}
-
-	return NewClientWithCallback(opts, callback)
+	cli, err := New(opts)
+	if err != nil {
+		return nil, err
+	}
+	cli.WithHostKeyCallback(callback)
+	return cli, nil
 }
 
 // NewInsecure creates a Client that does not verify the server keys.
 func NewInsecure(opts *Options) (*Client, error) {
-	return NewClientWithCallback(opts, ssh.InsecureIgnoreHostKey())
+	cli, err := New(opts)
+	if err != nil {
+		return nil, err
+	}
+	cli.WithHostKeyCallback(ssh.InsecureIgnoreHostKey())
+	return cli, nil
 }
 
-// NewClientWithCallback creates a Client with ssh.HostKeyCallback.
-func NewClientWithCallback(opts *Options, callback ssh.HostKeyCallback) (*Client, error) {
+// New creates a Client without ssh.HostKeyCallback.
+func New(opts *Options) (*Client, error) {
 	var (
 		auth ssh.AuthMethod
 		err  error
@@ -83,21 +92,25 @@ func NewClientWithCallback(opts *Options, callback ssh.HostKeyCallback) (*Client
 	}
 
 	c := &Client{
-		opts:     opts,
-		auth:     auth,
-		callback: callback,
+		opts: opts,
+		auth: auth,
+		callback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
 	}
 
-	err = c.Dial(opts)
-	if err != nil {
-		return nil, err
-	}
 	return c, nil
 }
 
+// WithHostKeyCallback sets ssh.HostKeyCallback of Client.
+func (c *Client) WithHostKeyCallback(callback ssh.HostKeyCallback) *Client {
+	c.callback = callback
+	return c
+}
+
 // Dial starts a client connection to the given SSH server.
-func (c *Client) Dial(opts *Options) error {
-	cli, err := c.dial(opts)
+func (c *Client) Dial() error {
+	cli, err := c.dial()
 	if err != nil {
 		return err
 	}
@@ -107,7 +120,7 @@ func (c *Client) Dial(opts *Options) error {
 }
 
 func (c *Client) Ping() error {
-	_, err := c.dial(c.opts)
+	_, err := c.dial()
 	if err != nil {
 		return err
 	}
@@ -226,14 +239,29 @@ func (c *Client) Close() error {
 	return c.Client.Close()
 }
 
-func (c *Client) dial(opts *Options) (*ssh.Client, error) {
+func (c *Client) dial() (*ssh.Client, error) {
 	return ssh.Dial(DefaultProtocol,
-		net.JoinHostPort(opts.Addr, strconv.Itoa(opts.Port)),
+		net.JoinHostPort(c.opts.Addr, strconv.Itoa(c.opts.Port)),
 		&ssh.ClientConfig{
-			User:            opts.Username,
+			User:            c.opts.Username,
 			Auth:            []ssh.AuthMethod{c.auth},
-			Timeout:         opts.Timeout,
+			Timeout:         c.opts.Timeout,
 			HostKeyCallback: c.callback,
 		},
 	)
+}
+
+func Ping(addr, user, password, key string) error {
+	cli, err := NewInsecure(&Options{
+		Username: user,
+		Password: password,
+		Key:      key,
+		Addr:     addr,
+		Port:     DefaultPort,
+	})
+	if err != nil {
+		return err
+	}
+	cli.Dial()
+	return cli.Ping()
 }

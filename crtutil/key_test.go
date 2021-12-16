@@ -3,15 +3,14 @@ package crtutil
 import (
 	"crypto/rsa"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParseKeyFile(t *testing.T) {
 	prik, err := ParseKeyFile("testdata/server-rsa.key")
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
-	if _, ok := prik.(*rsa.PrivateKey); !ok {
-		t.Fatal("not rsa key")
-	}
+	_, ok := prik.(*rsa.PrivateKey)
+	assert.True(t, ok)
 }
