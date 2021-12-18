@@ -65,6 +65,7 @@ func secure(t *testing.T, callback func(t *testing.T, cli *Client)) func(t *test
 	err = cli.Dial()
 	assert.NoError(t, err)
 	return func(t *testing.T) {
+		defer func() { _ = cli.Close() }()
 		callback(t, cli)
 	}
 }

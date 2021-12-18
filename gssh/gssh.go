@@ -119,12 +119,9 @@ func (c *Client) Dial() error {
 	return nil
 }
 
+// Ping alias for Dial.
 func (c *Client) Ping() error {
-	_, err := c.dial()
-	if err != nil {
-		return err
-	}
-	return nil
+	return c.Dial()
 }
 
 // CombinedOutput runs cmd on the remote host and returns its combined
@@ -236,7 +233,10 @@ func (c *Client) Download(rpath, lpath string) (err error) {
 
 // Close client net connection.
 func (c *Client) Close() error {
-	return c.Client.Close()
+	if c.Client != nil {
+		return c.Client.Close()
+	}
+	return nil
 }
 
 func (c *Client) dial() (*ssh.Client, error) {
@@ -262,6 +262,6 @@ func Ping(addr, user, password, key string) error {
 	if err != nil {
 		return err
 	}
-	cli.Dial()
+	defer func() { _ = cli.Close() }()
 	return cli.Ping()
 }
