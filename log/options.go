@@ -10,9 +10,9 @@ type Options struct {
 	DisableConsole bool `json:"disable-console" mapstructure:"disable-console"`
 	// DisableConsoleColor force disabling colors.
 	DisableConsoleColor bool `json:"disable-console-color" mapstructure:"disable-console-color"`
-	// DisableConsoleTime Whether to add a time
+	// DisableConsoleTime whether to add a time
 	DisableConsoleTime bool `json:"disable-console-time" mapstructure:"disable-console-time"`
-	// DisableConsoleLevel Whether to add a level
+	// DisableConsoleLevel whether to add a level
 	DisableConsoleLevel bool `json:"disable-console-level" mapstructure:"disable-console-level"`
 	// DisableConsoleCaller whether to log caller info
 	DisableConsoleCaller bool `json:"disable-console-caller" mapstructure:"disable-console-caller"`
@@ -21,7 +21,7 @@ type Options struct {
 	DisableFile bool `json:"disable-file" mapstructure:"disable-file"`
 	// DisableFileJson whether to enable json format for log file
 	DisableFileJson bool `json:"disable-file-json" mapstructure:"disable-file-json"`
-	// DisableFileTime Whether to add a time
+	// DisableFileTime whether to add a time
 	DisableFileTime bool `json:"disable-file-time" mapstructure:"disable-file-time"`
 	// DisableFileCaller whether to log caller info
 	DisableFileCaller bool `json:"disable-file-caller" mapstructure:"disable-file-caller"`

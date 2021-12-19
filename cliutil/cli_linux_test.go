@@ -35,9 +35,10 @@ func TestShellExecPipe(t *testing.T) {
 	}
 	t.Run("exec pipe", func(t *testing.T) {
 		var lines []string
-		err := ShellExecPipe(context.TODO(), func(line string) {
+		err := ShellExecPipe(context.TODO(), func(line []byte) error {
 			// t.Log(line)
-			lines = append(lines, line)
+			lines = append(lines, string(line))
+			return nil
 		}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
 		assert.NoError(t, err)
 		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
@@ -45,8 +46,9 @@ func TestShellExecPipe(t *testing.T) {
 
 	t.Run("exec pipe err", func(t *testing.T) {
 		var lines []string
-		err := ShellExecPipe(context.TODO(), func(line string) {
-			lines = append(lines, line)
+		err := ShellExecPipe(context.TODO(), func(line []byte) error {
+			lines = append(lines, string(line))
+			return nil
 		}, "echo hello, world!;sleep 1;exit 1")
 		assert.Equal(t, []string{"hello, world!"}, lines)
 		assert.Equal(t, "exit status 1",

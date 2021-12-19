@@ -1,13 +1,20 @@
 package fsutil
 
 import (
+	"bufio"
 	"io"
 	"os"
 	"path/filepath"
 )
 
+type WalkFunc func(line []byte) error
+
 // HomeDir returns the current user's home directory.
 func HomeDir() string {
+	if h, ok := os.LookupEnv("HOME"); ok && h != "" {
+		return h
+	}
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return ""
@@ -87,6 +94,36 @@ func CleanDir(fpath string) error {
 	}
 	for _, entry := range entries {
 		err = os.RemoveAll(filepath.Join(fpath, entry.Name()))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MkDirAll os.MkdirAll with permission 777
+func MkDirAll(fpath string) error {
+	return os.MkdirAll(fpath, os.ModePerm)
+}
+
+// Walk walks the line of the given file, calling fn for each line.
+func Walk(fpath string, fn WalkFunc) error {
+	if IsDir(fpath) {
+		return nil
+	}
+	fd, err := os.Open(fpath)
+	if err != nil {
+		return err
+	}
+	s := bufio.NewScanner(fd)
+	if err != nil {
+		return err
+	}
+	for {
+		if !s.Scan() {
+			break
+		}
+		err = fn(s.Bytes())
 		if err != nil {
 			return err
 		}

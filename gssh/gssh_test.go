@@ -91,9 +91,10 @@ func outPipeTest(t *testing.T, cli *Client) {
 	cmd, err := cli.Command("n=1;while [ $n -le 4 ];do echo $n;((n++));done")
 	assert.NoError(t, err)
 	var lines []string
-	err = cmd.OutputPipe(func(line string) {
+	err = cmd.OutputPipe(func(line []byte) error {
 		// t.Log(line)
-		lines = append(lines, line)
+		lines = append(lines, string(line))
+		return nil
 	})
 	assert.NoError(t, err)
 	assert.Equal(t, []string{"1", "2", "3", "4"}, lines)

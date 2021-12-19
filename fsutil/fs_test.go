@@ -49,3 +49,14 @@ func TestCleanDir(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 0, len(entries))
 }
+
+func TestWalk(t *testing.T) {
+	src := "testdata/src/a.txt"
+	var lines []string
+	err := Walk(src, func(line []byte) error {
+		lines = append(lines, string(line))
+		return nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, []string{"1", "22", "333", "4444"}, lines)
+}

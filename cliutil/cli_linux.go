@@ -9,11 +9,11 @@ import (
 	"sync"
 )
 
-// LoggingCallback callback function for logging command output
-type LoggingCallback func(line string)
+// LoggingFunc callback function for logging command output
+type LoggingFunc func(line []byte) error
 
-// DefaultLoggingCallback do nothing
-func DefaultLoggingCallback(line string) {}
+// DefaultLoggingFunc do nothing
+func DefaultLoggingFunc(line []byte) error { return nil }
 
 // ShellExec executes the given command by shell, e.g. "ls -al"
 func ShellExec(command string) (output string, err error) {
@@ -59,16 +59,16 @@ func ExecContext(ctx context.Context, command string, args ...string) (output st
 
 // ShellExecPipe executes the given command with a pipe that will be connected to the command's
 // stdout and stderr when the command starts.
-func ShellExecPipe(ctx context.Context, callback LoggingCallback, command string) error {
+func ShellExecPipe(ctx context.Context, fn LoggingFunc, command string) error {
 	if command == "" {
 		return ErrInvalidCmd
 	}
-	return ExecPipe(ctx, callback, "/bin/sh", "-c", command)
+	return ExecPipe(ctx, fn, "/bin/sh", "-c", command)
 }
 
 // ExecPipe executes the given command with a pipe that will be connected to the command's
 // stdout and stderr when the command starts.
-func ExecPipe(ctx context.Context, callback LoggingCallback, command string, args ...string) error {
+func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...string) error {
 	cmd := exec.CommandContext(ctx, command, args...)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -81,7 +81,7 @@ func ExecPipe(ctx context.Context, callback LoggingCallback, command string, arg
 	if err = cmd.Start(); err != nil {
 		return err
 	}
-	err = readPipe(stdout, stderr, callback)
+	err = readPipe(stdout, stderr, fn)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,7 @@ func ExecPipe(ctx context.Context, callback LoggingCallback, command string, arg
 	return cmd.Wait()
 }
 
-func readPipe(stdout, stderr io.ReadCloser, callback LoggingCallback) error {
+func readPipe(stdout, stderr io.ReadCloser, fn LoggingFunc) error {
 	oReader := bufio.NewReader(stdout)
 	eReader := bufio.NewReader(stderr)
 	wg := &sync.WaitGroup{}
@@ -98,11 +98,11 @@ func readPipe(stdout, stderr io.ReadCloser, callback LoggingCallback) error {
 	var oErr, eErr error
 	go func() {
 		defer wg.Done()
-		oErr = readBuf(oReader, callback)
+		oErr = readBuf(oReader, fn)
 	}()
 	go func() {
 		defer wg.Done()
-		eErr = readBuf(eReader, callback)
+		eErr = readBuf(eReader, fn)
 	}()
 	wg.Wait()
 	if oErr != nil {
@@ -114,10 +114,13 @@ func readPipe(stdout, stderr io.ReadCloser, callback LoggingCallback) error {
 	return nil
 }
 
-func readBuf(r *bufio.Reader, callback LoggingCallback) error {
+func readBuf(r *bufio.Reader, fn LoggingFunc) error {
 	for {
 		if line, _, err := r.ReadLine(); err == nil {
-			callback(string(line))
+			err = fn(line)
+			if err != nil {
+				return err
+			}
 		} else if err == io.EOF {
 			break
 		} else {
