@@ -30,8 +30,8 @@ func New(opts *Options) *Logger {
 		EncodeDuration: zapcore.MillisDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
-	if opts.TimeEncoder != nil {
-		encoderConfig.EncodeTime = opts.TimeEncoder
+	if opts.timeEncoder != nil {
+		encoderConfig.EncodeTime = opts.timeEncoder
 	}
 	if !opts.DisableConsole {
 		var consoleLevel Level

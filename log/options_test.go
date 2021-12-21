@@ -1,6 +1,7 @@
 package log
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -37,4 +38,10 @@ func TestOptions_Validate(t *testing.T) {
 
 	expected = `[unrecognized level: "failed" unrecognized level: "failed" no log output]`
 	assert.Equal(t, expected, fmt.Sprintf("%s", errs))
+}
+
+func TestUnmarshal(t *testing.T)  {
+	opts := NewOptions()
+	_, err := json.Marshal(opts)
+	assert.NoError(t, err)
 }
