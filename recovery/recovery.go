@@ -1,7 +1,9 @@
 // Package recovery provides a recover function
 package recovery
 
-import "github.com/shipengqi/golib/e"
+import (
+	"github.com/shipengqi/golib/errors"
+)
 
 type RecoverFunction func(err error)
 
@@ -12,13 +14,13 @@ func Recovery(f RecoverFunction) func() {
 			var err error
 			switch x := re.(type) {
 			case string:
-				err = e.New(x)
-			case e.Callers: // avoid duplicate stacks
+				err = errors.New(x)
+			case errors.Callers: // avoid duplicate stacks
 				err = x
 			case error:
-				err = e.WithStack(x)
+				err = errors.WithStack(x)
 			default:
-				err = e.New("")
+				err = errors.New("")
 			}
 			f(err)
 		}

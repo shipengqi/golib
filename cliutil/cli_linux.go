@@ -15,7 +15,7 @@ type LoggingFunc func(line []byte) error
 // DefaultLoggingFunc do nothing
 func DefaultLoggingFunc(line []byte) error { return nil }
 
-// ShellExec executes the given command by shell, e.g. "ls -al"
+// ShellExec executes the given command by shell, errors.g. "ls -al"
 func ShellExec(command string) (output string, err error) {
 	if command == "" {
 		return "", ErrInvalidCmd

@@ -1,4 +1,4 @@
-package e
+package errors
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ func TestFrameMarshalText(t *testing.T) {
 		want string
 	}{{
 		initpc,
-		`^github.com/shipengqi/golib/e\.init(\.ializers)? .+/golib/e/stack_test.go:\d+$`,
+		`^github.com/shipengqi/golib/errors\.init(\.ializers)? .+/golib/errors/stack_test.go:\d+$`,
 	}, {
 		0,
 		`^unknown$`,
@@ -34,7 +34,7 @@ func TestFrameMarshalJSON(t *testing.T) {
 		want string
 	}{{
 		initpc,
-		`^"github\.com/shipengqi/golib/e\.init(\.ializers)? .+/golib/e/stack_test.go:\d+"$`,
+		`^"github\.com/shipengqi/golib/errors\.init(\.ializers)? .+/golib/errors/stack_test.go:\d+"$`,
 	}, {
 		0,
 		`^"unknown"$`,

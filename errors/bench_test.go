@@ -1,4 +1,4 @@
-package e
+package errors
 
 import (
 	"fmt"
@@ -42,13 +42,13 @@ func BenchmarkErrors(b *testing.B) {
 	runs := []run{
 		{10, "std"},
 		{10, "pkg"},
-		{10, "e"},
+		{10, "errors"},
 		{100, "std"},
 		{100, "pkg"},
-		{100, "e"},
+		{100, "errors"},
 		{1000, "std"},
 		{1000, "pkg"},
-		{1000, "e"},
+		{1000, "errors"},
 	}
 	for _, r := range runs {
 		var part string
@@ -60,8 +60,8 @@ func BenchmarkErrors(b *testing.B) {
 		case "pkg":
 			part = "pkg/errors"
 			f = pkgErrors
-		case "e":
-			part = "golib/e"
+		case "errors":
+			part = "golib/errors"
 			f = golibErrors
 		default:
 		}

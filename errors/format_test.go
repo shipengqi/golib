@@ -1,4 +1,4 @@
-package e
+package errors
 
 import (
 	"errors"
@@ -26,8 +26,8 @@ func TestFormatNew(t *testing.T) {
 		New("error"),
 		"%+v",
 		"error\n" +
-			"github.com/shipengqi/golib/e.TestFormatNew\n" +
-			"\t.+/golib/e/format_test.go:26\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatNew\n" +
+			"\t.+/golib/errors/format_test.go:26\n.+",
 	}, {
 		New("error"),
 		"%q",
@@ -56,8 +56,8 @@ func TestFormatErrorf(t *testing.T) {
 		Errorf("%s", "error"),
 		"%+v",
 		"error\n" +
-			"github.com/shipengqi/golib/e.TestFormatErrorf\n" +
-			"\t.+/golib/e/format_test.go:56\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatErrorf\n" +
+			"\t.+/golib/errors/format_test.go:56\n.+",
 	}}
 
 	for i, tt := range tests {
@@ -82,8 +82,8 @@ func TestFormatWrap(t *testing.T) {
 		Wrap(New("error"), "error2"),
 		"%+v",
 		"error\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrap\n" +
-			"\t.+/golib/e/format_test.go:82\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWrap\n" +
+			"\t.+/golib/errors/format_test.go:82\n.+",
 	}, {
 		Wrap(io.EOF, "error"),
 		"%s",
@@ -97,15 +97,15 @@ func TestFormatWrap(t *testing.T) {
 		"%+v",
 		"EOF\n" +
 			"error\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrap\n" +
-			"\t.+/golib/e/format_test.go:96\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWrap\n" +
+			"\t.+/golib/errors/format_test.go:96\n.+",
 	}, {
 		Wrap(Wrap(io.EOF, "error1"), "error2"),
 		"%+v",
 		"EOF\n" +
 			"error1\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrap\n" +
-			"\t.+/golib/e/format_test.go:103\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWrap\n" +
+			"\t.+/golib/errors/format_test.go:103\n.+",
 	}, {
 		Wrap(New("error with space"), "context"),
 		"%q",
@@ -135,8 +135,8 @@ func TestFormatWrapf(t *testing.T) {
 		"%+v",
 		"EOF\n" +
 			"error2\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrapf\n" +
-			"\t.+/golib/e/format_test.go:134\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWrapf\n" +
+			"\t.+/golib/errors/format_test.go:134\n.+",
 	}, {
 		Wrapf(New("error"), "error%d", 2),
 		"%s",
@@ -149,8 +149,8 @@ func TestFormatWrapf(t *testing.T) {
 		Wrapf(New("error"), "error%d", 2),
 		"%+v",
 		"error\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrapf\n" +
-			"\t.+/golib/e/format_test.go:149\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWrapf\n" +
+			"\t.+/golib/errors/format_test.go:149\n.+",
 	}}
 
 	for i, tt := range tests {
@@ -175,8 +175,8 @@ func TestFormatWithStack(t *testing.T) {
 		WithStack(io.EOF),
 		"%+v",
 		[]string{"EOF",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:175\n.+"},
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:175\n.+"},
 	}, {
 		WithStack(New("error")),
 		"%s",
@@ -189,37 +189,37 @@ func TestFormatWithStack(t *testing.T) {
 		WithStack(New("error")),
 		"%+v",
 		[]string{"error",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:189\n.+",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:189\n.+"},
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:189\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:189\n.+"},
 	}, {
 		WithStack(WithStack(io.EOF)),
 		"%+v",
 		[]string{"EOF",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:197\n.+",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:197\n.+"},
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:197\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:197\n.+"},
 	}, {
 		WithStack(WithStack(Wrapf(io.EOF, "message"))),
 		"%+v",
 		[]string{"EOF",
 			"message",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:205\n.+",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:205\n.+",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:205\n.+"},
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:205\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:205\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:205\n.+"},
 	}, {
 		WithStack(Errorf("error%d", 1)),
 		"%+v",
 		[]string{"error1",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:216\n.+",
-			"github.com/shipengqi/golib/e.TestFormatWithStack\n" +
-				"\t.+/golib/e/format_test.go:216\n.+"},
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:216\n.+",
+			"github.com/shipengqi/golib/errors.TestFormatWithStack\n" +
+				"\t.+/golib/errors/format_test.go:216\n.+"},
 	}}
 
 	for i, tt := range tests {
@@ -245,8 +245,8 @@ func TestFormatWithMessage(t *testing.T) {
 		"%+v",
 		[]string{
 			"error",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:244",
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:244",
 			"error2"},
 	}, {
 		WithMessage(io.EOF, "addition1"),
@@ -272,33 +272,33 @@ func TestFormatWithMessage(t *testing.T) {
 		Wrap(WithMessage(io.EOF, "error1"), "error2"),
 		"%+v",
 		[]string{"EOF", "error1", "error2",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:272"},
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:272"},
 	}, {
 		WithMessage(Errorf("error%d", 1), "error2"),
 		"%+v",
 		[]string{"error1",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:278",
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:278",
 			"error2"},
 	}, {
 		WithMessage(WithStack(io.EOF), "error"),
 		"%+v",
 		[]string{
 			"EOF",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:285",
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:285",
 			"error"},
 	}, {
 		WithMessage(Wrap(WithStack(io.EOF), "inside-error"), "outside-error"),
 		"%+v",
 		[]string{
 			"EOF",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:293",
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:293",
 			"inside-error",
-			"github.com/shipengqi/golib/e.TestFormatWithMessage\n" +
-				"\t.+/golib/e/format_test.go:293",
+			"github.com/shipengqi/golib/errors.TestFormatWithMessage\n" +
+				"\t.+/golib/errors/format_test.go:293",
 			"outside-error"},
 	}}
 
@@ -324,22 +324,22 @@ func TestFormatGeneric(t *testing.T) {
 		}, {
 			func(err error) error { return WithStack(err) },
 			[]string{
-				"github.com/shipengqi/golib/e.(func·002|TestFormatGeneric.func2)\n\t" +
-					".+/golib/e/format_test.go:325\n.+",
+				"github.com/shipengqi/golib/errors.(func·002|TestFormatGeneric.func2)\n\t" +
+					".+/golib/errors/format_test.go:325\n.+",
 			},
 		}, {
 			func(err error) error { return Wrap(err, "wrap-error") },
 			[]string{
 				"wrap-error",
-				"github.com/shipengqi/golib/e.(func·003|TestFormatGeneric.func3)\n\t" +
-					".+/golib/e/format_test.go:331\n.+",
+				"github.com/shipengqi/golib/errors.(func·003|TestFormatGeneric.func3)\n\t" +
+					".+/golib/errors/format_test.go:331\n.+",
 			},
 		}, {
 			func(err error) error { return Wrapf(err, "wrapf-error%d", 1) },
 			[]string{
 				"wrapf-error1",
-				"github.com/shipengqi/golib/e.(func·004|TestFormatGeneric.func4)\n\t" +
-					".+/golib/e/format_test.go:338\n.+",
+				"github.com/shipengqi/golib/errors.(func·004|TestFormatGeneric.func4)\n\t" +
+					".+/golib/errors/format_test.go:338\n.+",
 			},
 		},
 	}
@@ -365,10 +365,10 @@ func TestFormatWrappedNew(t *testing.T) {
 		wrappedNew("error"),
 		"%+v",
 		"error\n" +
-			"github.com/shipengqi/golib/e.wrappedNew\n" +
-			"\t.+/golib/e/format_test.go:356\n" +
-			"github.com/shipengqi/golib/e.TestFormatWrappedNew\n" +
-			"\t.+/golib/e/format_test.go:365\n.+",
+			"github.com/shipengqi/golib/errors.wrappedNew\n" +
+			"\t.+/golib/errors/format_test.go:356\n" +
+			"github.com/shipengqi/golib/errors.TestFormatWrappedNew\n" +
+			"\t.+/golib/errors/format_test.go:365\n.+",
 	}}
 
 	for i, tt := range tests {
@@ -409,8 +409,8 @@ var stackLineR = regexp.MustCompile(`\.`)
 //
 // Example use:
 //
-// for _, e := range blocks {
-//   if strings.ContainsAny(e, "\n") {
+// for _, errors := range blocks {
+//   if strings.ContainsAny(errors, "\n") {
 //     // Match as stack
 //   } else {
 //     // Match as line
