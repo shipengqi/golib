@@ -18,7 +18,7 @@ func Recovery(f RecoverFunction) func() {
 			case errors.Callers: // avoid duplicate stacks
 				err = x
 			case error:
-				err = errors.WithStack(x)
+				err = errors.New(x.Error())
 			default:
 				err = errors.New("")
 			}

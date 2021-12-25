@@ -4,9 +4,10 @@ import (
 	stderrors "errors"
 	"testing"
 
+	pkgerrors "github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
-	pkgerrors "github.com/pkg/errors"
+	"github.com/shipengqi/golib/errors"
 )
 
 func TestRecovery(t *testing.T) {
@@ -15,10 +16,6 @@ func TestRecovery(t *testing.T) {
 		assert.True(t, ok)
 	}
 
-	t.Run("error string", func(t *testing.T) {
-		defer Recovery(testRecover)()
-		panic("string panic")
-	})
 	t.Run("error string", func(t *testing.T) {
 		defer Recovery(testRecover)()
 		panic("string panic")
@@ -33,10 +30,10 @@ func TestRecovery(t *testing.T) {
 	})
 	t.Run("errors error", func(t *testing.T) {
 		defer Recovery(testRecover)()
-		panic(errors.New("pkg panic"))
+		panic(errors.New("golib err panic"))
 	})
 	t.Run("multi-layers error", func(t *testing.T) {
 		defer Recovery(testRecover)()
-		panic(pkgerrors.WithStack(errors.New("pkg panic")))
+		panic(pkgerrors.WithStack(errors.New("golib and pkg err panic")))
 	})
 }
