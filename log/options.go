@@ -43,9 +43,9 @@ type Options struct {
 	// Output directory for logging when DisableFile is false
 	Output string `json:"output" mapstructure:"output"`
 	// FilenameEncoder log filename encoder
-	FilenameEncoder FilenameEncoder `json:"filename-encoder" mapstructure:"filename-encoder"`
+	filenameEncoder FilenameEncoder
 	// TimeEncoder log filename encoder
-	TimeEncoder TimeEncoder `json:"time-encoder" mapstructure:"time-encoder"`
+	timeEncoder TimeEncoder
 }
 
 // NewOptions creates an Options with default parameters.
@@ -56,9 +56,21 @@ func NewOptions() *Options {
 		DisableConsoleCaller: true,
 		DisableFileCaller:    true,
 		ConsoleLevel:         InfoLevel.String(),
-		FilenameEncoder:      DefaultFilenameEncoder,
-		TimeEncoder:          DefaultTimeEncoder,
+		filenameEncoder:      DefaultFilenameEncoder,
+		timeEncoder:          DefaultTimeEncoder,
 	}
+}
+
+// WithFilenameEncoder use the given encoder instead DefaultFilenameEncoder
+func (o *Options) WithFilenameEncoder(encoder FilenameEncoder) *Options {
+	o.filenameEncoder = encoder
+	return o
+}
+
+// WithTimeEncoder use the given encoder instead DefaultTimeEncoder
+func (o *Options) WithTimeEncoder(encoder TimeEncoder) *Options {
+	o.timeEncoder = encoder
+	return o
 }
 
 // Validate validates the options fields.

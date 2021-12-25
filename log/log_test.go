@@ -119,13 +119,13 @@ func TestDefaultLoggerWithoutTime(t *testing.T) {
 
 func TestLoggerFile(t *testing.T)  {
 	tmp := os.TempDir()
-	opts := NewOptions()
+	opts := NewOptions().WithFilenameEncoder(func() string {
+		return "test.log"
+	})
 	opts.DisableConsole = true
 	opts.DisableFile = false
 	opts.Output = tmp
-	opts.FilenameEncoder = func() string {
-		return "test.log"
-	}
+
 	Configure(opts)
 	Info("Hello, world!")
 	assert.Equal(t, filepath.Join(tmp, "test.log"), EncodedFilename)
