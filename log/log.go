@@ -58,6 +58,9 @@ type Interface interface {
 	// Flush calls the underlying Core's Sync method, flushing any buffered
 	// log entries. Applications should take care to call Sync before exiting.
 	Flush() error
+
+	// Close implements io.Closer, and closes the current logfile.
+	Close() error
 }
 
 // Configure sets up the logging framework
@@ -181,3 +184,6 @@ func WithValues(fields ...Field) *Logger {
 // Flush calls the underlying Core's Sync method, flushing any buffered
 // log entries. Applications should take care to call Sync before exiting.
 func Flush() error { return defaultLogger.Flush() }
+
+// Close implements io.Closer, and closes the current logfile of default logger.
+func Close() error { return defaultLogger.Close() }

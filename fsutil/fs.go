@@ -115,6 +115,7 @@ func Walk(fpath string, fn WalkFunc) error {
 	if err != nil {
 		return err
 	}
+	defer func() { _ = fd.Close() }()
 	s := bufio.NewScanner(fd)
 	for {
 		if !s.Scan() {

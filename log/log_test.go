@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -117,7 +118,7 @@ func TestDefaultLoggerWithoutTime(t *testing.T) {
 	assert.Equal(t, "\u001B[34mINFO\u001B[0m\tHello, world!\n", string(stdout))
 }
 
-func TestLoggerFile(t *testing.T)  {
+func TestLoggerFile(t *testing.T) {
 	tmp := os.TempDir()
 	opts := NewOptions().WithFilenameEncoder(func() string {
 		return "test.log"
@@ -130,4 +131,55 @@ func TestLoggerFile(t *testing.T)  {
 	Info("Hello, world!")
 	assert.Equal(t, filepath.Join(tmp, "test.log"), EncodedFilename)
 	_ = os.Remove(EncodedFilename)
+}
+
+func TestLoggerClose(t *testing.T) {
+	t.Run("close logger without log file", func(t *testing.T) {
+		str := "close logger without log file"
+		opts := NewOptions()
+		Configure(opts)
+		defer func() {
+			if err := recover(); err != nil {
+				assert.Equal(t, err, str)
+				cerr := Close()
+				assert.NoError(t, cerr)
+			} else {
+				t.Fatal("no panic")
+			}
+		}()
+		Panic(str)
+	})
+	t.Run("close logger with log file", func(t *testing.T) {
+		str := "close logger with log file"
+		opts := NewOptions()
+		opts.DisableFile = false
+		opts.DisableConsole = true
+		opts.Output = "testdata/log"
+		Configure(opts)
+		Info(str)
+		Info(EncodedFilename)
+		content, err := ioutil.ReadFile(EncodedFilename)
+		assert.NoError(t, err)
+		strings.Contains(string(content), str)
+		err = Close()
+		assert.NoError(t, err)
+		_ = os.Remove(EncodedFilename)
+	})
+	t.Run("close logger with rotate log file", func(t *testing.T) {
+		str := "close logger with rotate log file"
+		opts := NewOptions()
+		opts.DisableFile = false
+		opts.DisableRotate = false
+		opts.DisableConsole = true
+		opts.Output = "testdata/log"
+		Configure(opts)
+		Info(str)
+		Info(EncodedFilename)
+		err := Close()
+		assert.NoError(t, err)
+		content, err := ioutil.ReadFile(EncodedFilename)
+		assert.NoError(t, err)
+		strings.Contains(string(content), str)
+		_ = os.Remove(EncodedFilename)
+	})
 }

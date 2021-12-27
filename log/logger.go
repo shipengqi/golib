@@ -1,6 +1,7 @@
 package log
 
 import (
+	"io"
 	"os"
 	"strings"
 
@@ -9,6 +10,7 @@ import (
 )
 
 type Logger struct {
+	closer  io.Closer
 	log     *zap.Logger
 	sugared *zap.SugaredLogger
 }
@@ -59,6 +61,10 @@ func New(opts *Options) *Logger {
 		cores = append(cores, zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), consoleLevelEnabler))
 	}
 
+	var (
+		syncer zapcore.WriteSyncer
+		closer io.Closer
+	)
 	if !opts.DisableFile {
 		var fileLevel Level
 		if opts.FileLevel == "" {
@@ -84,13 +90,15 @@ func New(opts *Options) *Logger {
 		fileLevelEnabler := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
 			return lvl >= fileLevel
 		})
-		cores = append(cores, zapcore.NewCore(fileEncoder, rollingFileEncoder(opts), fileLevelEnabler))
+		syncer, closer = rollingFileEncoder(opts)
+		cores = append(cores, zapcore.NewCore(fileEncoder, syncer, fileLevelEnabler))
 	}
 	core := zapcore.NewTee(cores...)
 	unsugared := zap.New(core)
 	return &Logger{
 		log:     unsugared,
 		sugared: unsugared.Sugar(),
+		closer:  closer,
 	}
 }
 
@@ -244,4 +252,11 @@ func (l *Logger) WithValues(fields ...Field) *Logger {
 
 func (l *Logger) Flush() error {
 	return l.log.Sync()
+}
+
+func (l *Logger) Close() error {
+	if l.closer == nil {
+		return nil
+	}
+	return l.closer.Close()
 }

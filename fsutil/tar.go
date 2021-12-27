@@ -121,6 +121,7 @@ func untar(reader io.Reader, dst string) error {
 			}
 			_, err = io.Copy(file, tr)
 			if err != nil {
+				_ = file.Close()
 				return err
 			}
 			_ = file.Close()

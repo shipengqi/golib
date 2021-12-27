@@ -2,6 +2,7 @@ package log
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -23,7 +24,7 @@ func DefaultTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
 }
 
-func rollingFileEncoder(opts *Options) zapcore.WriteSyncer {
+func rollingFileEncoder(opts *Options) (zapcore.WriteSyncer, io.Closer) {
 	encoded := opts.filenameEncoder()
 	f := filepath.Join(opts.Output, encoded)
 	EncodedFilename = f
@@ -32,15 +33,16 @@ func rollingFileEncoder(opts *Options) zapcore.WriteSyncer {
 		if err != nil {
 			panic(err)
 		}
-		return zapcore.AddSync(fd)
+		return zapcore.AddSync(fd), fd
 	}
 
 	// lumberjack.Logger is already safe for concurrent use, so we don't need to
 	// lock it.
-	return zapcore.AddSync(&lumberjack.Logger{
+	jackl := &lumberjack.Logger{
 		Filename:   f,
 		MaxSize:    opts.MaxSize,
 		MaxAge:     opts.MaxAge,
 		MaxBackups: opts.MaxBackups,
-	})
+	}
+	return zapcore.AddSync(jackl), jackl
 }
