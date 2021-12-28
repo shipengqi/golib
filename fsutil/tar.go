@@ -3,6 +3,7 @@ package fsutil
 import (
 	"archive/tar"
 	"compress/gzip"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -77,7 +78,7 @@ func tarf(writer io.Writer, src string) error {
 		}
 		header.Name = strings.TrimPrefix(filename, string(filepath.Separator))
 		// write file info
-		if err := tw.WriteHeader(header); err != nil {
+		if err = tw.WriteHeader(header); err != nil {
 			return err
 		}
 		// whether info describes a regular file.
@@ -101,7 +102,7 @@ func untar(reader io.Reader, dst string) error {
 	tr := tar.NewReader(reader)
 	for {
 		header, err := tr.Next()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 		if err != nil {

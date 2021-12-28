@@ -19,18 +19,20 @@ const (
 	ErrCodeUnknown = 1
 )
 
-// Reserved errors
+// Reserved errors.
 var (
-	// OK error code 0
+	// OK error code 0.
 	OK = Register(ErrCodeOK, "OK")
 
-	// ErrUnknown error code 1
+	// ErrUnknown error code 1.
 	ErrUnknown = Register(ErrCodeUnknown, "Unknown Error")
 )
 
 // _codes registered codes.
-var _codes = make(map[int]struct{})
-var mux = &sync.Mutex{}
+var (
+	_codes = make(map[int]struct{})
+	mux    = &sync.Mutex{}
+)
 
 // Registerf registers an error code with the format specifier.
 func Registerf(code int, format string, args ...interface{}) error {

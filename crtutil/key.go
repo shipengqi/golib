@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 )
 
-// ParseKeyFile parses an unencrypted crypto.PrivateKey from the given file
+// ParseKeyFile parses an unencrypted crypto.PrivateKey from the given file.
 func ParseKeyFile(fpath string) (crypto.PrivateKey, error) {
 	f, err := ioutil.ReadFile(fpath)
 	if err != nil {
@@ -19,7 +19,7 @@ func ParseKeyFile(fpath string) (crypto.PrivateKey, error) {
 	return ParseKeyBytes(f, false)
 }
 
-// ParseKeyFileWithPass parses an unencrypted crypto.PrivateKey from the given file
+// ParseKeyFileWithPass parses an unencrypted crypto.PrivateKey from the given file.
 func ParseKeyFileWithPass(keyPath, keyPass string) (crypto.PrivateKey, error) {
 	f, err := ioutil.ReadFile(keyPath)
 	if err != nil {
@@ -28,7 +28,7 @@ func ParseKeyFileWithPass(keyPath, keyPass string) (crypto.PrivateKey, error) {
 	return parseKeyBytes(f, []byte(keyPass), false)
 }
 
-// ParseKeyBytes parses an unencrypted crypto.PrivateKey from the given data
+// ParseKeyBytes parses an unencrypted crypto.PrivateKey from the given data.
 func ParseKeyBytes(data []byte, isBase64 bool) (crypto.PrivateKey, error) {
 	return parseKeyBytes(data, nil, isBase64)
 }

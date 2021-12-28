@@ -76,7 +76,7 @@ func AppendKnownHost(fpath, host string, remote net.Addr, key ssh.PublicKey) err
 		fpath = f
 	}
 
-	f, err := os.OpenFile(fpath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0600)
+	f, err := os.OpenFile(fpath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o600)
 	if err != nil {
 		return err
 	}

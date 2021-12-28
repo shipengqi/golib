@@ -18,7 +18,7 @@ func Times(times int) *Retry {
 	return r.Times(times)
 }
 
-// Times sets the retry times
+// Times sets the retry times.
 func (r *Retry) Times(times int) *Retry {
 	r.times = times
 	return r

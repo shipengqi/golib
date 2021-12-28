@@ -35,10 +35,7 @@ func LocalIP() (net.IP, error) {
 // IsIPV4 reports whether the given IP is ipv4.
 func IsIPV4(ip string) bool {
 	trial := net.ParseIP(ip)
-	if trial.To4() == nil {
-		return false
-	}
-	return true
+	return trial.To4() != nil
 }
 
 // ClientIP returns the IP address of client.
@@ -67,7 +64,7 @@ func ClientIP(req *http.Request) string {
 	return ""
 }
 
-// IPString2Uint converts the given IP string to an uint value
+// IPString2Uint converts the given IP string to an uint value.
 func IPString2Uint(ip string) uint {
 	b := net.ParseIP(ip).To4()
 	if b == nil {
@@ -77,7 +74,7 @@ func IPString2Uint(ip string) uint {
 	return uint(b[3]) | uint(b[2])<<8 | uint(b[1])<<16 | uint(b[0])<<24
 }
 
-// Uint2IPString converts the given uint value to IP string
+// Uint2IPString converts the given uint value to IP string.
 func Uint2IPString(i uint) string {
 	if i > math.MaxUint32 {
 		return ""

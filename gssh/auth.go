@@ -38,7 +38,7 @@ func HasAgent() bool {
 	return os.Getenv("SSH_AUTH_SOCK") != ""
 }
 
-// Agent returns ssh.AuthMethod of ssh agent, (Unix systems only)
+// Agent returns ssh.AuthMethod of ssh agent, (Unix systems only).
 func Agent() (ssh.AuthMethod, error) {
 	if !HasAgent() {
 		return nil, errors.New("no agent")

@@ -31,7 +31,7 @@ func CopyFile(src, dst string) (err error) {
 	defer func() { _ = sfd.Close() }()
 
 	dfd, err := os.OpenFile(dst,
-		os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0o644)
 	if err != nil {
 		return
 	}
@@ -101,7 +101,7 @@ func CleanDir(fpath string) error {
 	return nil
 }
 
-// MkDirAll os.MkdirAll with permission 777
+// MkDirAll os.MkdirAll with permission 777.
 func MkDirAll(fpath string) error {
 	return os.MkdirAll(fpath, os.ModePerm)
 }

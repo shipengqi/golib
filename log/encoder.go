@@ -29,7 +29,7 @@ func rollingFileEncoder(opts *Options) (zapcore.WriteSyncer, io.Closer) {
 	f := filepath.Join(opts.Output, encoded)
 	EncodedFilename = f
 	if opts.DisableRotate {
-		fd, err := os.OpenFile(f, os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_SYNC, 0644)
+		fd, err := os.OpenFile(f, os.O_APPEND|os.O_CREATE|os.O_WRONLY|os.O_SYNC, 0o644)
 		if err != nil {
 			panic(err)
 		}

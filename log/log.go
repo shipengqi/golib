@@ -4,8 +4,8 @@ package log
 import "go.uber.org/zap"
 
 var (
-	defaultLogger   *Logger
-	// EncodedFilename filename for logging when DisableFile is false
+	defaultLogger *Logger
+	// EncodedFilename filename for logging when DisableFile is false.
 	EncodedFilename string
 )
 
@@ -26,7 +26,6 @@ type InfoLogger interface {
 	Infof(template string, args ...interface{})
 	Info(msg string, keysAndValues ...interface{})
 }
-
 
 type Interface interface {
 	InfoLogger
@@ -63,7 +62,7 @@ type Interface interface {
 	Close() error
 }
 
-// Configure sets up the logging framework
+// Configure sets up the logging framework.
 func Configure(opts *Options) {
 	l := New(opts)
 	defaultLogger = l

@@ -15,7 +15,7 @@ var (
 
 // ParseCertFile parses x509.Certificate from the given file.
 // The data is expected to be PEM Encoded and contain one certificate
-// with PEM type "CERTIFICATE"
+// with PEM type "CERTIFICATE".
 func ParseCertFile(fpath string) (*x509.Certificate, error) {
 	bs, err := ioutil.ReadFile(fpath)
 	if err != nil {
@@ -27,7 +27,7 @@ func ParseCertFile(fpath string) (*x509.Certificate, error) {
 
 // ParseCertBytes parses a single x509.Certificate from the given data.
 // The data is expected to be PEM Encoded and contain one certificate
-// with PEM type "CERTIFICATE"
+// with PEM type "CERTIFICATE".
 func ParseCertBytes(data []byte) (*x509.Certificate, error) {
 	if len(data) == 0 {
 		return nil, nil
@@ -45,7 +45,7 @@ func ParseCertBytes(data []byte) (*x509.Certificate, error) {
 
 // ParseCertChainFile parses the x509.Certificate chain from the given file.
 // The data is expected to be PEM Encoded and contain one of more certificates
-// with PEM type "CERTIFICATE"
+// with PEM type "CERTIFICATE".
 func ParseCertChainFile(fpath string) ([]*x509.Certificate, error) {
 	bs, err := ioutil.ReadFile(fpath)
 	if err != nil {
@@ -56,7 +56,7 @@ func ParseCertChainFile(fpath string) ([]*x509.Certificate, error) {
 
 // ParseCertChainBytes parses x509.Certificate chain from the given data.
 // The data is expected to be PEM Encoded and contain one of more certificates
-// with PEM type "CERTIFICATE"
+// with PEM type "CERTIFICATE".
 func ParseCertChainBytes(data []byte) ([]*x509.Certificate, error) {
 	var certs []*x509.Certificate
 	var cert *x509.Certificate
@@ -94,7 +94,7 @@ func ParseCertChainBytes(data []byte) ([]*x509.Certificate, error) {
 	return certs, nil
 }
 
-// CertToPEM returns a PEM encoded x509 Certificate
+// CertToPEM returns a PEM encoded x509 Certificate.
 func CertToPEM(cert *x509.Certificate) []byte {
 	return pem.EncodeToMemory(&pem.Block{
 		Type:  "CERTIFICATE",
@@ -102,7 +102,7 @@ func CertToPEM(cert *x509.Certificate) []byte {
 	})
 }
 
-// CertChainToPEM returns a PEM encoded chain of x509 Certificates, in the order they are passed
+// CertChainToPEM returns a PEM encoded chain of x509 Certificates, in the order they are passed.
 func CertChainToPEM(chain []*x509.Certificate) ([]byte, error) {
 	var buf bytes.Buffer
 	for _, cert := range chain {

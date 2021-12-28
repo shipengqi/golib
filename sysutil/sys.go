@@ -17,7 +17,7 @@ func User() *user.User {
 	return u
 }
 
-// FQDN returns the FQDN of current
+// FQDN returns the FQDN of current.
 func FQDN() (string, error) {
 	return fqdn()
 }

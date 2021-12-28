@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-// Options Configuration for logging
+// Options Configuration for logging.
 type Options struct {
 	// DisableConsole whether to log to console
 	DisableConsole bool `json:"disable-console" mapstructure:"disable-console"`
@@ -61,13 +61,13 @@ func NewOptions() *Options {
 	}
 }
 
-// WithFilenameEncoder use the given encoder instead DefaultFilenameEncoder
+// WithFilenameEncoder use the given encoder instead DefaultFilenameEncoder.
 func (o *Options) WithFilenameEncoder(encoder FilenameEncoder) *Options {
 	o.filenameEncoder = encoder
 	return o
 }
 
-// WithTimeEncoder use the given encoder instead DefaultTimeEncoder
+// WithTimeEncoder use the given encoder instead DefaultTimeEncoder.
 func (o *Options) WithTimeEncoder(encoder TimeEncoder) *Options {
 	o.timeEncoder = encoder
 	return o

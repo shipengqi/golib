@@ -9,6 +9,8 @@ import (
 	"strings"
 )
 
+const unknown = "unknown"
+
 type Callers interface {
 	error
 	Stack() []uintptr
@@ -28,7 +30,7 @@ func (f Frame) pc() uintptr { return uintptr(f) - 1 }
 func (f Frame) file() string {
 	fn := runtime.FuncForPC(f.pc())
 	if fn == nil {
-		return "unknown"
+		return unknown
 	}
 	file, _ := fn.FileLine(f.pc())
 	return file
@@ -49,7 +51,7 @@ func (f Frame) line() int {
 func (f Frame) name() string {
 	fn := runtime.FuncForPC(f.pc())
 	if fn == nil {
-		return "unknown"
+		return unknown
 	}
 	return fn.Name()
 }
@@ -92,7 +94,7 @@ func (f Frame) Format(s fmt.State, verb rune) {
 // same as that of fmt.Sprintf("%+v", f), but without newlines or tabs.
 func (f Frame) MarshalText() ([]byte, error) {
 	name := f.name()
-	if name == "unknown" {
+	if name == unknown {
 		return []byte(name), nil
 	}
 	return []byte(fmt.Sprintf("%s %s:%d", name, f.file(), f.line())), nil

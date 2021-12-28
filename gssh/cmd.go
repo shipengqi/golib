@@ -10,9 +10,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var (
-	ErrNilSession = errors.New("could not start with nil session, use SetSession() to set a session")
-)
+var ErrNilSession = errors.New("could not start with nil session, use SetSession() to set a session")
 
 type LoggingFunc func(line []byte) error
 
@@ -38,7 +36,7 @@ type Cmd struct {
 	ctx     context.Context
 }
 
-// newCommand returns the Cmd struct to execute the named program with
+// newCommand returns the Cmd struct to execute the named program with.
 func newCommand(session *ssh.Session, name string, args ...string) *Cmd {
 	return &Cmd{
 		Path:    name,

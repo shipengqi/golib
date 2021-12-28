@@ -96,7 +96,7 @@ linters-settings:
 
   cyclop:
     # the maximal code complexity to report
-    max-complexity: 10
+    max-complexity: 30
     # the maximal average package complexity. If it's higher than 0.0 (float) the check is enabled (default 0.0)
     package-average: 0.0
     # should ignore tests (default false)
@@ -158,16 +158,16 @@ linters-settings:
     # Check whether fmt.Errorf uses the %w verb for formatting errors. See the readme for caveats
     errorf: true
     # Check for plain type assertions and type switches
-    asserts: true
+    asserts: false
     # Check for plain error comparisons
-    comparison: true
+    #comparison: true
 
   exhaustive:
     # check switch statements in generated files also
     check-generated: false
     # presence of "default" case in switch statements satisfies exhaustiveness,
     # even if all enum members are not listed
-    default-signifies-exhaustive: false
+    default-signifies-exhaustive: true
     # enum members matching the supplied regex do not have to be listed in
     # switch statements to satisfy exhaustiveness
     ignore-enum-members: ""
@@ -203,7 +203,7 @@ linters-settings:
 
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 20
+    min-complexity: 30
 
   goconst:
     # minimal length of string constant, 3 by default
@@ -300,9 +300,9 @@ linters-settings:
         # Glob patterns such as 'rules-*.go' may be specified.
         #rules: '${configDir}/ruleguard/rules-*.go,${configDir}/myrule1.go'
         rules: ''
-      tooManyResultsChecker:
+      #tooManyResultsChecker:
         # maximum number of results (default 5)
-        maxResults: 10
+        #maxResults: 10
       truncateCmp:
         # whether to skip int/uint/uintptr types (default true)
         skipArchDependent: true
@@ -384,9 +384,9 @@ linters-settings:
     # it's a comma-separated list of prefixes
     local-prefixes: github.com/shipengqi/golib
 
-  golint:
+  #golint:
     # minimal confidence for issues, default is 0.8
-    min-confidence: 0.8
+    #min-confidence: 0.8
 
   gomnd:
     settings:
@@ -569,7 +569,7 @@ linters-settings:
 
   nestif:
     # minimal complexity of if statements to report, 5 by default
-    min-complexity: 4
+    min-complexity: 20
 
   nilnil:
     # By default, nilnil checks all returned types below.
@@ -580,10 +580,10 @@ linters-settings:
       - map
       - chan
 
-  nlreturn:
+  #nlreturn:
     # size of the block (including return statement that is still "OK")
     # so no return split required.
-    block-size: 1
+    #block-size: 1
 
   nolintlint:
     # Disable to ensure that all nolint directives actually have an effect. Default is false.
@@ -639,19 +639,19 @@ linters-settings:
     rules:
       - name: indent-error-flow
         severity: warning
-      - name: add-constant
-        severity: warning
-        arguments:
-          - maxLitCount: "3"
-            allowStrs: '""'
-            allowInts: "0,1,2"
-            allowFloats: "0.0,0.,1.0,1.,2.0,2."
+      #- name: add-constant
+        #severity: warning
+        #arguments:
+          #- maxLitCount: "3"
+            #allowStrs: '""'
+            #allowInts: "0,1,2"
+            #allowFloats: "0.0,0.,1.0,1.,2.0,2."
 
   staticcheck:
     # Select the Go version to target. The default is '1.13'.
     go: "1.16"
     # https://staticcheck.io/docs/options#checks
-    checks: [ "all" ]
+    checks: [ "all", "-SA1019" ]
 
   stylecheck:
     # Select the Go version to target. The default is '1.13'.
@@ -790,13 +790,13 @@ linters-settings:
   # See README doc for more info.
   custom:
     # Each custom linter should have a unique name.
-    example:
+    #example:
       # The path to the plugin *.so. Can be absolute or local. Required for each custom linter
-      path: /path/to/example.so
+      #path: /path/to/example.so
       # The description of the linter. Optional, just for documentation purposes.
-      description: This is an example usage of a plugin linter.
+      #description: This is an example usage of a plugin linter.
       # Intended to point to the repo location of the linter. Optional, just for documentation purposes.
-      original-url: github.com/golangci/example-linter
+      #original-url: github.com/golangci/example-linter
 
 linters:
   disable-all: true
@@ -818,7 +818,6 @@ linters:
     - forbidigo
     - funlen
     - gci
-    - gochecknoinits
     - gocognit
     - goconst
     - gocyclo
@@ -843,7 +842,6 @@ linters:
     - nakedret
     - nestif
     - nilerr
-    - nlreturn
     - noctx
     - nolintlint
     - paralleltest
@@ -867,14 +865,15 @@ linters:
     - bidichk
     - gomoddirectives
     - wastedassign
-    - golint
-      #- tagliatelle
-      #- nilnil
-      #- tenv
-      #- varnamelen
-      #- contextcheck
-      #- errname
-      #- ForceTypeAssert
+    #- gochecknoinits
+    #- golint
+    #- tagliatelle
+    #- nilnil
+    #- tenv
+    #- varnamelen
+    #- contextcheck
+    #- errname
+    #- ForceTypeAssert
     #- nilassign
   #enable-all: true
   #disable:

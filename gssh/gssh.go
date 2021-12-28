@@ -49,7 +49,6 @@ func NewOptions() *Options {
 // Client SSH client.
 type Client struct {
 	*ssh.Client
-	sftp     *sftp.Client
 	opts     *Options
 	auth     ssh.AuthMethod
 	callback ssh.HostKeyCallback
@@ -180,7 +179,7 @@ func (c *Client) NewSftp(opts ...sftp.ClientOption) (*sftp.Client, error) {
 	return sftp.NewClient(c.Client, opts...)
 }
 
-// Upload equivalent to the command `scp <local file> <host>:<remote file>`
+// Upload equivalent to the command `scp <local file> <host>:<remote file>`.
 func (c *Client) Upload(lpath, rpath string) (err error) {
 	local, err := os.Open(lpath)
 	if err != nil {
@@ -204,7 +203,7 @@ func (c *Client) Upload(lpath, rpath string) (err error) {
 	return
 }
 
-// Download equivalent to the command `scp <host>:<remote file> <local file>`
+// Download equivalent to the command `scp <host>:<remote file> <local file>`.
 func (c *Client) Download(rpath, lpath string) (err error) {
 	local, err := os.Create(lpath)
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 
 type RecoverFunction func(err error)
 
-// Recovery returns a recover function with error stack added
+// Recovery returns a recover function with error stack added.
 func Recovery(f RecoverFunction) func() {
 	return func() {
 		if re := recover(); re != nil {
