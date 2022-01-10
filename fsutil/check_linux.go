@@ -5,8 +5,7 @@ import (
 	"syscall"
 )
 
-// Owner returns the uid and gid of the given path.
-func Owner(fpath string) (uid, gid int, err error) {
+func owner(fpath string) (uid, gid int, err error) {
 	uid = os.Getuid()
 	gid = os.Getgid()
 	if !IsExists(fpath) {
@@ -16,7 +15,6 @@ func Owner(fpath string) (uid, gid int, err error) {
 	if err != nil {
 		return
 	}
-	info.Sys()
 	if stat, ok := info.Sys().(*syscall.Stat_t); ok {
 		uid = int(stat.Uid)
 		gid = int(stat.Gid)

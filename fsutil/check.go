@@ -40,3 +40,8 @@ func IsSymlink(fpath string) bool {
 	}
 	return false
 }
+
+// Owner returns the uid and gid of the given path.
+func Owner(fpath string) (uid, gid int, err error) {
+	return owner(fpath)
+}
