@@ -15,10 +15,8 @@ func Recovery(f RecoverFunction) func() {
 			switch x := re.(type) {
 			case string:
 				err = errors.New(x)
-			case errors.Callers: // avoid duplicate stacks
-				err = x
 			case error:
-				err = errors.New(x.Error())
+				err = errors.New(x.Error()) // deduplicate stacks
 			default:
 				err = errors.New("")
 			}
