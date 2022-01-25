@@ -120,9 +120,10 @@ func TestDefaultLoggerWithoutTime(t *testing.T) {
 
 func TestLoggerFile(t *testing.T) {
 	tmp := os.TempDir()
-	opts := NewOptions().WithFilenameEncoder(func() string {
+	opts := NewOptions()
+	opts.FilenameEncoder = func() string {
 		return "test.log"
-	})
+	}
 	opts.DisableConsole = true
 	opts.DisableFile = false
 	opts.Output = tmp
