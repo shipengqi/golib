@@ -25,7 +25,7 @@ func DefaultTimeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 }
 
 func rollingFileEncoder(opts *Options) (zapcore.WriteSyncer, io.Closer) {
-	encoded := opts.filenameEncoder()
+	encoded := opts.FilenameEncoder()
 	f := filepath.Join(opts.Output, encoded)
 	EncodedFilename = f
 	if opts.DisableRotate {
