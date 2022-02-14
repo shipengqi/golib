@@ -254,9 +254,9 @@ func (l *Logger) Flush() error {
 }
 
 func (l *Logger) Close() error {
-	if err := l.Flush(); err != nil {
-		return err
-	}
+	// https://github.com/uber-go/zap/issues/772
+	_ = l.Flush()
+
 	if l.closer != nil {
 		return l.closer.Close()
 	}
