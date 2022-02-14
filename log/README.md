@@ -7,7 +7,9 @@ A structured logger for Go, based on [zap](https://github.com/uber-go/zap).
 ```go
 opts := &log.Newoptions()
 log.Configure(opts)
-defer log.Flush()
+defer func() {
+    _ = log.Close()
+}()
 
 log.Debug("debug message")
 log.Info("info message")

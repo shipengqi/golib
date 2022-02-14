@@ -254,6 +254,9 @@ func (l *Logger) Flush() error {
 }
 
 func (l *Logger) Close() error {
+	if err := l.Flush(); err != nil {
+		return err
+	}
 	if l.closer != nil {
 		return l.closer.Close()
 	}
