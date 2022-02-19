@@ -54,7 +54,7 @@ func TestShellExecPipe(t *testing.T) {
 	testcmd := "echo hello, world!;sleep 1;exit 1"
 	if os.Getenv("CI") == "true" {
 		testcmd = "echo hello, world!;exit 1"
-		t.Skip("Skipped")
+		// t.Skip("Skipped")
 	}
 	t.Run("exec pipe err", func(t *testing.T) {
 		var lines []string

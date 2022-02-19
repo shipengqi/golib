@@ -6,7 +6,6 @@ import (
 	"context"
 	"io"
 	"os/exec"
-	"sync"
 )
 
 // LoggingFunc callback function for logging command output
@@ -74,18 +73,13 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	if err != nil {
 		return err
 	}
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return err
-	}
 	defer func() {
 		_ = stdout.Close()
-		_ = stderr.Close()
 	}()
 	if err = cmd.Start(); err != nil {
 		return err
 	}
-	err = readPipe(stdout, stderr, fn)
+	err = readPipe(stdout, fn)
 	if err != nil {
 		return err
 	}
@@ -93,28 +87,13 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	return cmd.Wait()
 }
 
-func readPipe(stdout, stderr io.ReadCloser, fn LoggingFunc) error {
-	oReader := bufio.NewReader(stdout)
-	eReader := bufio.NewReader(stderr)
-	wg := &sync.WaitGroup{}
+func readPipe(stdout io.ReadCloser, fn LoggingFunc) error {
+	reader := bufio.NewReader(stdout)
+	err := readBuf(reader, fn)
+	if err != nil {
+		return err
+	}
 
-	wg.Add(2)
-	var oErr, eErr error
-	go func() {
-		defer wg.Done()
-		oErr = readBuf(oReader, fn)
-	}()
-	go func() {
-		defer wg.Done()
-		eErr = readBuf(eReader, fn)
-	}()
-	wg.Wait()
-	if oErr != nil {
-		return eErr
-	}
-	if eErr != nil {
-		return eErr
-	}
 	return nil
 }
 
