@@ -89,12 +89,7 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 
 func readPipe(stdout io.ReadCloser, fn LoggingFunc) error {
 	reader := bufio.NewReader(stdout)
-	err := readBuf(reader, fn)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return readBuf(reader, fn)
 }
 
 func readBuf(r *bufio.Reader, fn LoggingFunc) error {
