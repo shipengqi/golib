@@ -3,11 +3,15 @@ module github.com/shipengqi/golib
 go 1.16
 
 require (
-	github.com/BurntSushi/toml v0.4.1 // indirect
-	github.com/pkg/errors v0.8.1
-	github.com/pkg/sftp v1.13.4
+	github.com/pkg/errors v0.9.1
+	github.com/shipengqi/errors v0.1.0
 	github.com/stretchr/testify v1.7.0
-	go.uber.org/zap v1.19.1
-	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b
-	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/kr/pretty v0.1.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )

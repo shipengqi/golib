@@ -2,7 +2,7 @@
 package recovery
 
 import (
-	"github.com/shipengqi/golib/errors"
+	"github.com/shipengqi/errors"
 )
 
 type RecoverFunction func(err error)
