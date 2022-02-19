@@ -51,25 +51,11 @@ func TestShellExec(t *testing.T) {
 }
 
 func TestShellExecPipe(t *testing.T) {
-	// if os.Getenv("CI") == "true" {
-	// 	t.Skip("Skipped")
-	// }
-	t.Run("exec pipe", func(t *testing.T) {
-		var lines []string
-		err := ShellExecPipe(context.TODO(), func(line []byte) error {
-			// t.Log(line)
-			lines = append(lines, string(line))
-			return nil
-		}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
-		assert.NoError(t, err)
-		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
-	})
-
 	testcmd := "echo hello, world!;sleep 1;exit 1"
 	if os.Getenv("CI") == "true" {
 		testcmd = "echo hello, world!;exit 1"
+		t.Skip("Skipped")
 	}
-
 	t.Run("exec pipe err", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) error {
@@ -79,5 +65,16 @@ func TestShellExecPipe(t *testing.T) {
 		assert.Equal(t, []string{"hello, world!"}, lines)
 		assert.Equal(t, "exit status 1",
 			strings.TrimSpace(err.Error()))
+	})
+
+	t.Run("exec pipe", func(t *testing.T) {
+		var lines []string
+		err := ShellExecPipe(context.TODO(), func(line []byte) error {
+			// t.Log(line)
+			lines = append(lines, string(line))
+			return nil
+		}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
+		assert.NoError(t, err)
+		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
 	})
 }

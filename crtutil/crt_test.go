@@ -14,6 +14,22 @@ func TestParseCrtFile(t *testing.T) {
 	_, err := ParseCertFile("testdata/server.crt")
 	assert.NoError(t, err)
 	// printCrt(t, crt, "server")
+
+	t.Run("parse error with empty data", func(t *testing.T) {
+		_, err = ParseCertFile("testdata/server-fail.crt")
+		assert.Error(t, err)
+	})
+}
+
+func TestParseCertBytes(t *testing.T) {
+	t.Run("empty data", func(t *testing.T) {
+		_, err := ParseCertBytes([]byte{})
+		assert.NoError(t, err)
+	})
+	t.Run("ErrNoPEMData", func(t *testing.T) {
+		_, err := ParseCertBytes([]byte("sdfklhjasdfkjhasdfkjlhas"))
+		assert.ErrorIs(t, err, ErrNoPEMData)
+	})
 }
 
 func TestParseCrtSetFile(t *testing.T) {
@@ -28,6 +44,18 @@ func TestParseCrtSetFile(t *testing.T) {
 	crts, err = ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
+
+	t.Run("parse error with empty data", func(t *testing.T) {
+		_, err = ParseCertChainFile("testdata/server-fail.crt")
+		assert.Error(t, err)
+	})
+}
+
+func TestParseCertChainBytes(t *testing.T) {
+	t.Run("ErrNoPEMData", func(t *testing.T) {
+		_, err := ParseCertChainBytes([]byte("sdfklhjasdfkjhasdfkjlhas"))
+		assert.ErrorIs(t, err, ErrNoPEMData)
+	})
 }
 
 func TestCertChainToPEM(t *testing.T) {
