@@ -51,6 +51,9 @@ func TestShellExec(t *testing.T) {
 }
 
 func TestShellExecPipe(t *testing.T) {
+	if os.Getenv("CI") == "true" {
+		t.Skip("Skipped")
+	}
 	t.Run("exec pipe", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) error {
