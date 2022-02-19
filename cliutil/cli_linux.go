@@ -78,6 +78,10 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	if err != nil {
 		return err
 	}
+	defer func() {
+		_ = stdout.Close()
+		_ = stderr.Close()
+	}()
 	if err = cmd.Start(); err != nil {
 		return err
 	}

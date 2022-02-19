@@ -7,7 +7,7 @@ import (
 	pkgerrors "github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/shipengqi/golib/errors"
+	"github.com/shipengqi/errors"
 )
 
 func TestRecovery(t *testing.T) {

@@ -9,19 +9,6 @@ import (
 
 type WalkFunc func(line []byte) error
 
-// HomeDir returns the current user's home directory.
-func HomeDir() string {
-	if h, ok := os.LookupEnv("HOME"); ok && h != "" {
-		return h
-	}
-
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return ""
-	}
-	return home
-}
-
 // CopyFile copies a file from src to dst.
 func CopyFile(src, dst string) (err error) {
 	sfd, err := os.Open(src)
