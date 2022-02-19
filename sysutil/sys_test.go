@@ -30,14 +30,14 @@ func TestPwd(t *testing.T) {
 
 func TestIsLinux(t *testing.T) {
 	got := IsLinux()
-	if os.Getenv("CI") == "true" {
+	if isci() {
 		assert.True(t, got)
 	}
 }
 
 func TestIsWindows(t *testing.T) {
 	got := IsWindows()
-	if os.Getenv("CI") == "true" {
+	if isci() {
 		assert.False(t, got)
 	}
 }
@@ -50,4 +50,11 @@ func TestUser(t *testing.T) {
 func TestTmpDir(t *testing.T) {
 	got := TmpDir()
 	assert.NotEmpty(t, got)
+}
+
+func isci() bool {
+	if os.Getenv("CI") == "true" {
+		return true
+	}
+	return false
 }
