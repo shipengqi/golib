@@ -12,5 +12,5 @@ func TestPID(t *testing.T) {
 
 func TestGetProcessByPid(t *testing.T) {
 	got := GetProcessByPid(0)
-	assert.NotEmpty(t, got)
+	assert.Empty(t, got)
 }
