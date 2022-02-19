@@ -42,9 +42,11 @@ func TestOwner(t *testing.T) {
 		assert.NoError(t, err)
 
 		uid, gid, err := Owner(fp)
+		t.Log("got: ", uid, gid)
 		u := sysutil.User()
 		assert.NotNil(t, u)
 
+		t.Log("expected: ", u.Uid, u.Gid)
 		assert.Equal(t, u.Uid, uid)
 		assert.Equal(t, u.Gid, gid)
 	}
