@@ -2,7 +2,7 @@ package cliutil
 
 import (
 	"context"
-	"os"
+	"errors"
 	"strings"
 	"testing"
 
@@ -27,6 +27,14 @@ func TestShellExec(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, "hello, world!", strings.TrimSpace(stdout))
 	})
+	t.Run("ShellExec ErrExit", func(t *testing.T) {
+		_, err := ShellExec("exit 1")
+		assert.Error(t, err)
+		var exite *ErrExit
+		errors.As(err, &exite)
+		t.Log(exite.Code(), exite.Stdout(), exite.Stderr())
+		assert.Equal(t, 1, exite.Code())
+	})
 	t.Run("ShellExec ErrInvalidCmd", func(t *testing.T) {
 		_, err := ShellExec("")
 		assert.ErrorIs(t, err, ErrInvalidCmd)
@@ -42,9 +50,9 @@ func TestShellExec(t *testing.T) {
 }
 
 func TestShellExecPipe(t *testing.T) {
-	if os.Getenv("CI") == "true" {
-		t.Skip("Skipped")
-	}
+	// if os.Getenv("CI") == "true" {
+	// 	t.Skip("Skipped")
+	// }
 	t.Run("exec pipe", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) error {
@@ -61,7 +69,7 @@ func TestShellExecPipe(t *testing.T) {
 		err := ShellExecPipe(context.TODO(), func(line []byte) error {
 			lines = append(lines, string(line))
 			return nil
-		}, "echo hello, world!;sleep 1;exit 1")
+		}, "echo hello, world!;exit 1")
 		assert.Equal(t, []string{"hello, world!"}, lines)
 		assert.Equal(t, "exit status 1",
 			strings.TrimSpace(err.Error()))
