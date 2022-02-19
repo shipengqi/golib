@@ -18,7 +18,7 @@ func PID() int {
 	return os.Getpid()
 }
 
-// GetProcessByPid 根据PID获取进程的执行路径.
+// GetProcessByPid Get process with the given PID
 func GetProcessByPid(pid int) string {
 	exe := fmt.Sprintf("/proc/%d/exe", pid)
 	path, _ := os.Readlink(exe)
