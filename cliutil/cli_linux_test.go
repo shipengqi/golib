@@ -62,9 +62,9 @@ func TestShellExecPipe(t *testing.T) {
 		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
 	})
 
-	testcmd := "echo hello, world!;exit 1"
+	testcmd := "echo hello, world!;sleep 1;exit 1"
 	if os.Getenv("CI") == "true" {
-		testcmd = "echo hello, world!;sleep 1;exit 1"
+		testcmd = "echo hello, world!;exit 1"
 	}
 
 	t.Run("exec pipe err", func(t *testing.T) {
