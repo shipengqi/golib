@@ -67,14 +67,14 @@ func TestShellExecPipe(t *testing.T) {
 			strings.TrimSpace(err.Error()))
 	})
 
-	t.Run("exec pipe", func(t *testing.T) {
-		var lines []string
-		err := ShellExecPipe(context.TODO(), func(line []byte) error {
-			// t.Log(line)
-			lines = append(lines, string(line))
-			return nil
-		}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
-		assert.NoError(t, err)
-		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
-	})
+	// t.Run("exec pipe", func(t *testing.T) {
+	// 	var lines []string
+	// 	err := ShellExecPipe(context.TODO(), func(line []byte) error {
+	// 		// t.Log(line)
+	// 		lines = append(lines, string(line))
+	// 		return nil
+	// 	}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
+	// 	assert.NoError(t, err)
+	// 	assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
+	// })
 }
