@@ -8,7 +8,7 @@ import (
 type RecoverFunction func(err error)
 
 // Recovery returns a recover function with error stack added.
-func Recovery(f RecoverFunction) func() {
+func Recovery(fn RecoverFunction) func() {
 	return func() {
 		if re := recover(); re != nil {
 			var err error
@@ -20,7 +20,7 @@ func Recovery(f RecoverFunction) func() {
 			default:
 				err = errors.New("")
 			}
-			f(err)
+			fn(err)
 		}
 	}
 }
