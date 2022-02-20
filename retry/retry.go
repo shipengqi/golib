@@ -37,13 +37,13 @@ func (r *Retry) WithContext(ctx context.Context) *Retry {
 }
 
 // Do execute the given func with retry.
-func (r *Retry) Do(f func() error) error {
+func (r *Retry) Do(fn func() error) error {
 	var err error
 	for ; r.times > 0; r.times-- {
 		if r.isDone() {
 			break
 		}
-		if err = f(); err != nil {
+		if err = fn(); err != nil {
 			r.sleep()
 		} else {
 			break
