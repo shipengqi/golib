@@ -52,9 +52,11 @@ func TestShellExec(t *testing.T) {
 
 func TestShellExecPipe(t *testing.T) {
 	testcmd := "echo hello, world!;sleep 1;exit 1"
+	testcmd2 := "n=1;while [ $n -le 4 ];do echo $n;((n++));done"
 	if os.Getenv("CI") == "true" {
 		testcmd = "echo hello, world!;exit 1"
-		t.Skip("Skipped")
+		testcmd2 = "echo 1;echo 2;echo 3;echo 4"
+		// t.Skip("Skipped")
 	}
 	t.Run("exec pipe err", func(t *testing.T) {
 		var lines []string
@@ -70,10 +72,9 @@ func TestShellExecPipe(t *testing.T) {
 	t.Run("exec pipe", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) error {
-			// t.Log(line)
 			lines = append(lines, string(line))
 			return nil
-		}, "n=1;while [ $n -le 4 ];do echo $n;((n++));done")
+		}, testcmd2)
 		assert.NoError(t, err)
 		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
 	})
