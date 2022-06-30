@@ -58,28 +58,16 @@ func ParseCertChainFile(fpath string) ([]*x509.Certificate, error) {
 // The data is expected to be PEM Encoded and contain one of more certificates
 // with PEM type "CERTIFICATE".
 func ParseCertChainBytes(data []byte) ([]*x509.Certificate, error) {
-	var certs []*x509.Certificate
-	var cert *x509.Certificate
-	var block *pem.Block
-	var rest []byte
-	var err error
+	var (
+		certs []*x509.Certificate
+		cert *x509.Certificate
+		block *pem.Block
+		err error
+	)
 
-	block, rest = pem.Decode(data)
-	if block == nil {
-		return nil, ErrNoPEMData
-	}
-	cert, err = x509.ParseCertificate(block.Bytes)
-	if err != nil {
-		return nil, err
-	}
-	certs = append(certs, cert)
-	for {
-		rest = bytes.TrimSpace(rest)
-		// This loop terminates because there is no more content
-		if len(rest) == 0 {
-			break
-		}
-		block, rest = pem.Decode(rest)
+	for len(data) > 0 {
+		data = bytes.TrimSpace(data)
+		block, data = pem.Decode(data)
 		// No PEM data is found
 		if block == nil {
 			break
@@ -89,6 +77,10 @@ func ParseCertChainBytes(data []byte) ([]*x509.Certificate, error) {
 			return nil, err
 		}
 		certs = append(certs, cert)
+	}
+
+	if len(certs) == 0 {
+		return nil, ErrNoPEMData
 	}
 
 	return certs, nil
