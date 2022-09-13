@@ -1,6 +1,7 @@
 package netutil
 
 import (
+	"net"
 	"net/http"
 	"testing"
 
@@ -76,5 +77,35 @@ func TestUint2IPString(t *testing.T) {
 	} {
 		got := Uint2IPString(v.num)
 		assert.Equal(t, v.want, got)
+	}
+}
+
+func TestDeDuplicateIPs(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    []net.IP
+		expected []net.IP
+	}{
+		{"length should be 1", []net.IP{
+			net.ParseIP("10.0.0.1"),
+			net.ParseIP("10.0.0.1"),
+			net.ParseIP(""),
+			net.IP{},
+		}, []net.IP{net.ParseIP("10.0.0.1")}},
+		{"length should be 2", []net.IP{
+			net.ParseIP("10.0.0.1"),
+			net.ParseIP("10.0.0.2"),
+			net.ParseIP("10.0.0.1"),
+		}, []net.IP{
+			net.ParseIP("10.0.0.1"),
+			net.ParseIP("10.0.0.2"),
+		}},
+	}
+
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			got := DeDuplicateIPs(v.input)
+			assert.Equal(t, v.expected, got)
+		})
 	}
 }

@@ -18,3 +18,20 @@ func ContainsIgnoreCase(str1, str2 string) bool {
 func IsEmpty(str string) bool {
 	return strings.TrimSpace(str) == ""
 }
+
+// DeDuplicateStr De-Duplicate the given strings.
+func DeDuplicateStr(s []string) []string {
+	encountered := map[string]struct{}{}
+	ret := make([]string, 0)
+	for i := range s {
+		if len(s[i]) == 0 {
+			continue
+		}
+		if _, contained := encountered[s[i]]; contained {
+			continue
+		}
+		encountered[s[i]] = struct{}{}
+		ret = append(ret, s[i])
+	}
+	return ret
+}
