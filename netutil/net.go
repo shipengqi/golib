@@ -64,6 +64,26 @@ func ClientIP(req *http.Request) string {
 	return ""
 }
 
+// DeDuplicateIPs De-duplicate the given IPs.
+func DeDuplicateIPs(ips []net.IP) []net.IP {
+	encountered := map[string]struct{}{}
+	ret := make([]net.IP, 0)
+	for i := range ips {
+		if ips[i] == nil {
+			continue
+		}
+		if ips[i].String() == "<nil>" {
+			continue
+		}
+		if _, contained := encountered[ips[i].String()]; contained {
+			continue
+		}
+		encountered[ips[i].String()] = struct{}{}
+		ret = append(ret, ips[i])
+	}
+	return ret
+}
+
 // IPString2Uint converts the given IP string to an uint value.
 func IPString2Uint(ip string) uint {
 	b := net.ParseIP(ip).To4()

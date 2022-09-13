@@ -66,3 +66,21 @@ func TestIsEmpty(t *testing.T) {
 		})
 	}
 }
+
+func TestDeDuplicateStr(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    []string
+		expected []string
+	}{
+		{"length should be 1", []string{"111", "111", ""}, []string{"111"}},
+		{"length should be 2", []string{"111s", "222", "111s"}, []string{"111s", "222"}},
+	}
+
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			got := DeDuplicateStr(v.input)
+			assert.Equal(t, v.expected, got)
+		})
+	}
+}
