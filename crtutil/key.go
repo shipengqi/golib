@@ -22,7 +22,7 @@ func ReadFileAsSigner(fpath string) (crypto.PrivateKey, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ParseKeyBytes(f, false)
+	return ReadBytesAsSigner(f, false)
 }
 
 // ParseKeyFileWithPass read a crypto.PrivateKey from the given file.
