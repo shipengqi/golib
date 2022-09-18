@@ -121,10 +121,7 @@ func ReadChainBytesAsX509(data []byte) ([]*x509.Certificate, error) {
 // CertToPEM converts a x509.Certificate into a PEM block.
 // Deprecated: use EncodeX509ToPEM instead.
 func CertToPEM(cert *x509.Certificate) []byte {
-	return pem.EncodeToMemory(&pem.Block{
-		Type:  "CERTIFICATE",
-		Bytes: cert.Raw,
-	})
+	return EncodeX509ToPEM(cert, nil)
 }
 
 // EncodeX509ToPEM converts a x509.Certificate into a PEM block.
@@ -139,19 +136,7 @@ func EncodeX509ToPEM(cert *x509.Certificate, headers map[string]string) []byte {
 // CertChainToPEM converts a slice of x509.Certificate into PEM block, in the order they are passed.
 // Deprecated: use EncodeX509ChainToPEM instead.
 func CertChainToPEM(chain []*x509.Certificate) ([]byte, error) {
-	var buf bytes.Buffer
-	for _, cert := range chain {
-		if err := pem.Encode(
-			&buf,
-			&pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: cert.Raw,
-			},
-		); err != nil {
-			return nil, err
-		}
-	}
-	return buf.Bytes(), nil
+	return EncodeX509ChainToPEM(chain, nil)
 }
 
 // EncodeX509ChainToPEM converts a slice of x509.Certificate into PEM block, in the order they are passed.
