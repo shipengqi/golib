@@ -11,66 +11,66 @@ import (
 )
 
 func TestParseCrtFile(t *testing.T) {
-	_, err := ParseCertFile("testdata/server.crt")
+	_, err := ReadFileAsX509("testdata/server.crt")
 	assert.NoError(t, err)
 	// printCrt(t, crt, "server")
 
 	t.Run("parse error with empty data", func(t *testing.T) {
-		_, err = ParseCertFile("testdata/server-fail.crt")
+		_, err = ReadFileAsX509("testdata/server-fail.crt")
 		assert.Error(t, err)
 	})
 }
 
 func TestParseCertBytes(t *testing.T) {
 	t.Run("empty data", func(t *testing.T) {
-		_, err := ParseCertBytes([]byte{})
+		_, err := ReadBytesAsX509([]byte{})
 		assert.NoError(t, err)
 	})
 	t.Run("ErrNoPEMData", func(t *testing.T) {
-		_, err := ParseCertBytes([]byte("sdfklhjasdfkjhasdfkjlhas"))
+		_, err := ReadBytesAsX509([]byte("sdfklhjasdfkjhasdfkjlhas"))
 		assert.ErrorIs(t, err, ErrNoPEMData)
 	})
 }
 
 func TestParseCrtSetFile(t *testing.T) {
-	crts, err := ParseCertChainFile("testdata/server-ca.crt")
+	crts, err := ReadChainFileAsX509("testdata/server-ca.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(crts))
 
-	crts, err = ParseCertChainFile("testdata/server-3layers.crt")
+	crts, err = ReadChainFileAsX509("testdata/server-3layers.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 
-	crts, err = ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
+	crts, err = ReadChainFileAsX509("testdata/server-3layers-withcharacters.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 
 	t.Run("parse error with empty data", func(t *testing.T) {
-		_, err = ParseCertChainFile("testdata/server-fail.crt")
+		_, err = ReadChainFileAsX509("testdata/server-fail.crt")
 		assert.Error(t, err)
 	})
 }
 
 func TestParseCertChainBytes(t *testing.T) {
 	t.Run("ErrNoPEMData", func(t *testing.T) {
-		_, err := ParseCertChainBytes([]byte("sdfklhjasdfkjhasdfkjlhas"))
+		_, err := ReadChainBytesAsX509([]byte("sdfklhjasdfkjhasdfkjlhas"))
 		assert.ErrorIs(t, err, ErrNoPEMData)
 	})
 }
 
 func TestCertChainToPEM(t *testing.T) {
-	crts, err := ParseCertChainFile("testdata/server-3layers-withcharacters.crt")
+	crts, err := ReadChainFileAsX509("testdata/server-3layers-withcharacters.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
-	got, err := CertChainToPEM(crts)
+	got, err := EncodeX509ChainToPEM(crts, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, got)
 }
 
 func TestCertToPEM(t *testing.T) {
-	crt, err := ParseCertFile("testdata/server.crt")
+	crt, err := ReadFileAsX509("testdata/server.crt")
 	assert.NoError(t, err)
-	got := CertToPEM(crt)
+	got := EncodeX509ToPEM(crt, nil)
 	assert.NotEmpty(t, got)
 }
 
