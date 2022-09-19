@@ -10,48 +10,30 @@ import (
 	"io/ioutil"
 )
 
-// ParseKeyFile parses an unencrypted crypto.PrivateKey from the given file.
-// Deprecated: use ReadFileAsSigner instead.
-func ParseKeyFile(fpath string) (crypto.PrivateKey, error) {
-	return ReadFileAsSigner(fpath)
-}
-
-// ReadFileAsSigner read a crypto.PrivateKey from the given file.
-func ReadFileAsSigner(fpath string) (crypto.PrivateKey, error) {
+// ReadAsSignerFromFile read a crypto.PrivateKey from the given file.
+func ReadAsSignerFromFile(fpath string) (crypto.PrivateKey, error) {
 	f, err := ioutil.ReadFile(fpath)
 	if err != nil {
 		return nil, err
 	}
-	return ReadBytesAsSigner(f, false)
+	return ReadAsSigner(f, false)
 }
 
-// ParseKeyFileWithPass read a crypto.PrivateKey from the given file.
-// Deprecated: use ReadFileAsSignerWithPass instead.
-func ParseKeyFileWithPass(keyPath, keyPass string) (crypto.PrivateKey, error) {
-	return ReadFileAsSignerWithPass(keyPath, keyPass)
-}
-
-// ReadFileAsSignerWithPass read a crypto.PrivateKey from the given file.
-func ReadFileAsSignerWithPass(keyPath, keyPass string) (crypto.PrivateKey, error) {
+// ReadAsSignerWithPassFromFile read a crypto.PrivateKey from the given file.
+func ReadAsSignerWithPassFromFile(keyPath, keyPass string) (crypto.PrivateKey, error) {
 	f, err := ioutil.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}
-	return readBytesAsSigner(f, []byte(keyPass), false)
+	return readAsSigner(f, []byte(keyPass), false)
 }
 
-// ParseKeyBytes read a crypto.PrivateKey from the given data.
-// Deprecated: use ReadBytesAsSigner instead.
-func ParseKeyBytes(data []byte, isBase64 bool) (crypto.PrivateKey, error) {
-	return readBytesAsSigner(data, nil, isBase64)
+// ReadAsSigner read a crypto.PrivateKey from the given data.
+func ReadAsSigner(data []byte, isBase64 bool) (crypto.PrivateKey, error) {
+	return readAsSigner(data, nil, isBase64)
 }
 
-// ReadBytesAsSigner read a crypto.PrivateKey from the given data.
-func ReadBytesAsSigner(data []byte, isBase64 bool) (crypto.PrivateKey, error) {
-	return readBytesAsSigner(data, nil, isBase64)
-}
-
-func readBytesAsSigner(key, keypass []byte, isBase64 bool) (crypto.PrivateKey, error) {
+func readAsSigner(key, keypass []byte, isBase64 bool) (crypto.PrivateKey, error) {
 	var err error
 	dkeystr := key
 

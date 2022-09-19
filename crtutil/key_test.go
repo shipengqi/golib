@@ -9,7 +9,7 @@ import (
 )
 
 func TestParseKeyFile(t *testing.T) {
-	prik, err := ReadFileAsSigner("testdata/server-rsa.key")
+	prik, err := ReadAsSignerFromFile("testdata/server-rsa.key")
 	assert.NoError(t, err)
 
 	_, ok := prik.(*rsa.PrivateKey)
@@ -17,7 +17,7 @@ func TestParseKeyFile(t *testing.T) {
 }
 
 func TestParseKeyFileWithPass(t *testing.T) {
-	prik, err := ReadFileAsSignerWithPass("testdata/server-rsa.key", "")
+	prik, err := ReadAsSignerWithPassFromFile("testdata/server-rsa.key", "")
 	assert.NoError(t, err)
 
 	_, ok := prik.(*rsa.PrivateKey)
@@ -28,7 +28,7 @@ func TestParseKeyBytes(t *testing.T) {
 	f, err := ioutil.ReadFile("testdata/server-rsa-base64.key")
 	assert.NoError(t, err)
 
-	prik, err := ReadBytesAsSigner(f, true)
+	prik, err := ReadAsSigner(f, true)
 	assert.NoError(t, err)
 
 	_, ok := prik.(*rsa.PrivateKey)
