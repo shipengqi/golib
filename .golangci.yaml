@@ -805,7 +805,7 @@ linters:
     - asciicheck
     - bodyclose
     - cyclop
-    - deadcode
+    #- deadcode # deprecated, replaced by unused
     - depguard
     - dogsled
     - dupl
@@ -813,7 +813,8 @@ linters:
     - errcheck
     - errorlint
     - exhaustive
-    - exhaustivestruct
+    - exhaustruct
+    #- exhaustivestruct # deprecated, replaced by exhaustruct.
     - exportloopref
     - forbidigo
     - funlen
@@ -833,7 +834,7 @@ linters:
     - gosec
     - gosimple
     - govet
-    - ifshort
+    #- ifshort # 'ifshort' is deprecated
     - importas
     - ineffassign
     - lll
@@ -852,14 +853,14 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - structcheck
+    #- structcheck # deprecated, replaced by unused
     - stylecheck
     - thelper
     - tparallel
     - unconvert
     - unparam
     - unused
-    - varcheck
+    #- varcheck # deprecated, replaced by unused
     - wastedassign
     - whitespace
     - bidichk

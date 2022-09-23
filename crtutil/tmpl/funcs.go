@@ -108,15 +108,15 @@ func CommonName(name pkix.Name) string {
 }
 
 func ShortName(name pkix.Name) (out string) {
-	printed := false
+	show := false
 	for _, n := range name.Names {
 		short := OidShort(n.Type)
 		if short != "" {
-			if printed {
+			if show {
 				out += ", "
 			}
 			out += fmt.Sprintf("%s=%v", short, n.Value)
-			printed = true
+			show = true
 		}
 	}
 
