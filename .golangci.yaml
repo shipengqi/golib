@@ -183,6 +183,18 @@ linters-settings:
       - '*.Test'
       - '*.Test2'
 
+  exhaustruct:
+    # List of regular expressions to match struct packages and names.
+    # If this list is empty, all structs are tested.
+    # Default: []
+    include:
+      - '.*\.Test'
+      - '.*\.Test2'
+    # List of regular expressions to exclude struct packages and names from check.
+    # Default: []
+    # exclude:
+    # - 'cobra\.Command$'
+
   forbidigo:
     # Forbid the following identifiers (identifiers are written using regexp):
     forbid:
@@ -805,7 +817,7 @@ linters:
     - asciicheck
     - bodyclose
     - cyclop
-    - deadcode
+    #- deadcode # deprecated, replaced by unused
     - depguard
     - dogsled
     - dupl
@@ -813,7 +825,8 @@ linters:
     - errcheck
     - errorlint
     - exhaustive
-    - exhaustivestruct
+    - exhaustruct
+    #- exhaustivestruct # deprecated, replaced by exhaustruct.
     - exportloopref
     - forbidigo
     - funlen
@@ -833,7 +846,7 @@ linters:
     - gosec
     - gosimple
     - govet
-    - ifshort
+    #- ifshort # 'ifshort' is deprecated
     - importas
     - ineffassign
     - lll
@@ -852,14 +865,14 @@ linters:
     - rowserrcheck
     - sqlclosecheck
     - staticcheck
-    - structcheck
+    #- structcheck # deprecated, replaced by unused
     - stylecheck
     - thelper
     - tparallel
     - unconvert
     - unparam
     - unused
-    - varcheck
+    #- varcheck # deprecated, replaced by unused
     - wastedassign
     - whitespace
     - bidichk

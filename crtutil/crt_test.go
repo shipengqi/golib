@@ -1,65 +1,91 @@
 package crtutil
 
 import (
-	"bytes"
-	"crypto/x509"
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseCrtFile(t *testing.T) {
-	_, err := ReadFileAsX509("testdata/server.crt")
-	assert.NoError(t, err)
-	// printCrt(t, crt, "server")
+func TestReadAsX509FromFile(t *testing.T) {
+	tests := []struct {
+		title     string
+		input     string
+		expected  int
+		shoulderr bool
+	}{
+		{
+			"read server certificate",
+			"testdata/server.crt",
+			1,
+			false,
+		},
+		{
+			"returns error while reading a non-existent file",
+			"testdata/server-non-existent.crt",
+			0,
+			true,
+		},
+		{
+			"returns 2 CA certificates",
+			"testdata/server-ca.crt",
+			2,
+			false,
+		},
+		{
+			"returns 3 certificates",
+			"testdata/server-3layers.crt",
+			3,
+			false,
+		},
+		{
+			"returns 3 certificates and ignore redundant characters",
+			"testdata/server-3layers-withcharacters.crt",
+			3,
+			false,
+		},
+	}
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			certs, err := ReadAsX509FromFile(v.input)
+			if v.shoulderr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, v.expected, len(certs))
+			}
+		})
+	}
 
-	t.Run("parse error with empty data", func(t *testing.T) {
-		_, err = ReadFileAsX509("testdata/server-fail.crt")
-		assert.Error(t, err)
-	})
 }
 
 func TestParseCertBytes(t *testing.T) {
-	t.Run("empty data", func(t *testing.T) {
-		_, err := ReadBytesAsX509([]byte{})
-		assert.NoError(t, err)
-	})
-	t.Run("ErrNoPEMData", func(t *testing.T) {
-		_, err := ReadBytesAsX509([]byte("sdfklhjasdfkjhasdfkjlhas"))
-		assert.ErrorIs(t, err, ErrNoPEMData)
-	})
+	tests := []struct {
+		title    string
+		input    []byte
+		expected int
+	}{
+		{
+			"empty data, should got 0 certificates",
+			[]byte{},
+			0,
+		},
+		{
+			"string data, should got 0 certificates",
+			[]byte("sdfklhjasdfkjhasdfkjlhas"),
+			0,
+		},
+	}
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			certs, err := ReadAsX509(v.input)
+			assert.NoError(t, err)
+			assert.Equal(t, v.expected, len(certs))
+		})
+	}
 }
 
-func TestParseCrtSetFile(t *testing.T) {
-	crts, err := ReadChainFileAsX509("testdata/server-ca.crt")
-	assert.NoError(t, err)
-	assert.Equal(t, 2, len(crts))
-
-	crts, err = ReadChainFileAsX509("testdata/server-3layers.crt")
-	assert.NoError(t, err)
-	assert.Equal(t, 3, len(crts))
-
-	crts, err = ReadChainFileAsX509("testdata/server-3layers-withcharacters.crt")
-	assert.NoError(t, err)
-	assert.Equal(t, 3, len(crts))
-
-	t.Run("parse error with empty data", func(t *testing.T) {
-		_, err = ReadChainFileAsX509("testdata/server-fail.crt")
-		assert.Error(t, err)
-	})
-}
-
-func TestParseCertChainBytes(t *testing.T) {
-	t.Run("ErrNoPEMData", func(t *testing.T) {
-		_, err := ReadChainBytesAsX509([]byte("sdfklhjasdfkjhasdfkjlhas"))
-		assert.ErrorIs(t, err, ErrNoPEMData)
-	})
-}
-
-func TestCertChainToPEM(t *testing.T) {
-	crts, err := ReadChainFileAsX509("testdata/server-3layers-withcharacters.crt")
+func TestEncodeX509ChainToPEM(t *testing.T) {
+	crts, err := ReadAsX509FromFile("testdata/server-3layers-withcharacters.crt")
 	assert.NoError(t, err)
 	assert.Equal(t, 3, len(crts))
 	got, err := EncodeX509ChainToPEM(crts, nil)
@@ -67,34 +93,39 @@ func TestCertChainToPEM(t *testing.T) {
 	assert.NotEmpty(t, got)
 }
 
-func TestCertToPEM(t *testing.T) {
-	crt, err := ReadFileAsX509("testdata/server.crt")
+func TestEncodeX509ToPEM(t *testing.T) {
+	crt, err := ReadAsX509FromFile("testdata/server.crt")
 	assert.NoError(t, err)
-	got := EncodeX509ToPEM(crt, nil)
+	got := EncodeX509ToPEM(crt[0], nil)
 	assert.NotEmpty(t, got)
 }
 
-func printCrt(t *testing.T, cert *x509.Certificate, name string) {
-	t.Log("")
-	t.Logf("%s Certificate Information:", name)
-	t.Logf("  Issuer: %s", cert.Issuer)
-	t.Logf("  NotBefore: %s", cert.NotBefore.String())
-	t.Logf("  NotAfter: %s", cert.NotAfter.String())
-	t.Logf("  Subject: %s", cert.Subject)
-
-	dnsStr := strings.Join(cert.DNSNames, ",")
-	ipBuf := new(bytes.Buffer)
-
-	for k := range cert.IPAddresses {
-		if k == 0 {
-			_, _ = fmt.Fprintf(ipBuf, "%s", cert.IPAddresses[k].String())
-		} else {
-			_, _ = fmt.Fprintf(ipBuf, ", %s", cert.IPAddresses[k].String())
-		}
+func TestIsSelfSigned(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    string
+		expected bool
+	}{
+		{
+			"should not be self-signed",
+			"testdata/server.crt",
+			false,
+		},
+		{
+			"should be self-signed",
+			"testdata/self-signed.crt",
+			true,
+		},
 	}
-	t.Logf("  DNSNames: %s", dnsStr)
-	t.Logf("  IPAddresses: %s", ipBuf.String())
-	t.Logf("  KeyUsage: %v", cert.KeyUsage)
-	t.Logf("  ExtKeyUsage: %v", cert.ExtKeyUsage)
-	t.Logf("  IsCA: %v", cert.IsCA)
+
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			parsed, err := ReadAsX509FromFile(v.input)
+			assert.NoError(t, err)
+			assert.NotEmpty(t, parsed)
+			got := IsSelfSigned(parsed[0])
+
+			assert.Equal(t, v.expected, got)
+		})
+	}
 }

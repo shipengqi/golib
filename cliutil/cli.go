@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -108,7 +109,7 @@ func readBuf(r *bufio.Reader, fn LoggingFunc) error {
 			if err != nil {
 				return err
 			}
-		} else if err == io.EOF {
+		} else if errors.Is(err, io.EOF) {
 			break
 		} else {
 			return err
