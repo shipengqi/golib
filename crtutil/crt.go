@@ -78,3 +78,8 @@ func EncodeX509ChainToPEM(chain []*x509.Certificate, headers map[string]string) 
 	}
 	return buf.Bytes(), nil
 }
+
+// IsSelfSigned whether the given x509.Certificate is self-signed.
+func IsSelfSigned(cert *x509.Certificate) bool {
+	return cert.CheckSignatureFrom(cert) == nil
+}

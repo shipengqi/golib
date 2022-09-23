@@ -99,3 +99,33 @@ func TestEncodeX509ToPEM(t *testing.T) {
 	got := EncodeX509ToPEM(crt[0], nil)
 	assert.NotEmpty(t, got)
 }
+
+func TestIsSelfSigned(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    string
+		expected bool
+	}{
+		{
+			"should not be self-signed",
+			"testdata/server.crt",
+			false,
+		},
+		{
+			"should be self-signed",
+			"testdata/self-signed.crt",
+			true,
+		},
+	}
+
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			parsed, err := ReadAsX509FromFile(v.input)
+			assert.NoError(t, err)
+			assert.NotEmpty(t, parsed)
+			got := IsSelfSigned(parsed[0])
+
+			assert.Equal(t, v.expected, got)
+		})
+	}
+}
