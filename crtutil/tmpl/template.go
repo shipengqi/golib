@@ -23,6 +23,9 @@ const (
 Serial: {{.SerialNumber}}
 Valid: {{.NotBefore | notBefore}} to {{.NotAfter | notAfter}}
 Signature: {{.SignatureAlgorithm | highlightAlgorithm}}{{- template "IsSelfSigned" . -}}
+{{- if (showBitLen .) }}
+BitLength: {{.PublicKey | bitLen}}
+{{end}}
 Subject Info:
 	{{- template "PkixName" .Subject}}
 Issuer Info:
@@ -150,6 +153,8 @@ func BuildCertFuncMap() template.FuncMap {
 		"commonName":         CommonName,
 		"isSelfSigned":       ShowSelfSigned,
 		"nameConstraints":    ShowNameConstraints,
+		"showBitLen":         ShowBitLength,
+		"bitLen":             BitLength,
 	}
 	for k, v := range extras {
 		funcmap[k] = v
