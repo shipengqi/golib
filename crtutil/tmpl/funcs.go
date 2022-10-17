@@ -2,11 +2,13 @@ package tmpl
 
 import (
 	"bytes"
+	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/hex"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -17,6 +19,7 @@ import (
 const (
 	ValidityWarnThreshold = "720h"
 	TimeFormat            = "2006-01-02 15:04 MST"
+	MinRsaKeyBitLength    = 2048
 )
 
 var (
@@ -240,6 +243,24 @@ func ShowSelfSigned(cert *x509.Certificate) string {
 	}
 
 	return ""
+}
+
+func ShowBitLength(cert *x509.Certificate) bool {
+	if cert.PublicKey == nil {
+		return false
+	}
+	if _, ok := cert.PublicKey.(*rsa.PublicKey); ok {
+		return true
+	}
+	return false
+}
+
+func BitLength(key *rsa.PublicKey) string {
+	blen := key.N.BitLen()
+	if blen < MinRsaKeyBitLength {
+		return Colorize(strconv.Itoa(blen), "yellow")
+	}
+	return Colorize(strconv.Itoa(blen), "green")
 }
 
 func thresholdToTime(threshold string, nowT ...time.Time) time.Time {
