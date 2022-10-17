@@ -259,9 +259,8 @@ func BitLength(key *rsa.PublicKey) string {
 	blen := key.N.BitLen()
 	if blen < MinRsaKeyBitLength {
 		return Colorize(strconv.Itoa(blen), "yellow")
-	} else {
-		return Colorize(strconv.Itoa(blen), "green")
 	}
+	return Colorize(strconv.Itoa(blen), "green")
 }
 
 func thresholdToTime(threshold string, nowT ...time.Time) time.Time {
