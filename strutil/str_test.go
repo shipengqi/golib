@@ -84,3 +84,29 @@ func TestDeDuplicateStr(t *testing.T) {
 		})
 	}
 }
+
+func TestString2Int(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    []string
+		expected []int
+		err      bool
+	}{
+		{"convert string slice to int slice", []string{"111", "121", "222"}, []int{111, 121, 222}, false},
+		{"convert error with abc", []string{"111", "abc", "222"}, nil, true},
+		{"convert error with empty string", []string{"111", "", "222"}, nil, true},
+	}
+
+	for _, v := range tests {
+		t.Run(v.title, func(t *testing.T) {
+			got, err := String2Int(v.input)
+			if v.err {
+				assert.Error(t, err)
+				assert.Nil(t, got)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, v.expected, got)
+		})
+	}
+}

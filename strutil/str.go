@@ -1,6 +1,9 @@
 package strutil
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 // EqualsIgnoreCase check if str1 is equal to str2 ignoring case sensitivity
 func EqualsIgnoreCase(str1, str2 string) bool {
@@ -34,4 +37,17 @@ func DeDuplicateStr(s []string) []string {
 		ret = append(ret, s[i])
 	}
 	return ret
+}
+
+// String2Int convert string slice to int slice.
+func String2Int(arr []string) ([]int, error) {
+	var err error
+	ints := make([]int, len(arr))
+	for i := 0; i < len(arr); i++ {
+		ints[i], err = strconv.Atoi(arr[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return ints, nil
 }
