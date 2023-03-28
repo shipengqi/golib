@@ -2,54 +2,9 @@ package safe
 
 import (
 	"bytes"
-	"context"
 	"fmt"
-	"log"
 	"runtime"
-	"sync"
 )
-
-func Go(handler func()) {
-	go func() {
-		defer recovery()
-		handler()
-	}()
-}
-
-func GoWithCtx(ctx context.Context, handler func(ctx context.Context)) {
-	go func() {
-		defer recovery()
-		handler(ctx)
-	}()
-}
-
-func GoAndWait(handlers ...func() error) error {
-	var (
-		wg   sync.WaitGroup
-		once sync.Once
-		err  error
-	)
-
-	for _, fn := range handlers {
-		wg.Add(1)
-		go func(handler func() error) {
-			defer recovery()
-			defer wgdone(&wg)
-
-			if e := handler(); e != nil {
-				once.Do(func() {
-					err = e
-				})
-			}
-		}(fn)
-	}
-	wg.Wait()
-	return err
-}
-
-func GoAndWaitWithCtx(ctx context.Context, handler func()) {
-
-}
 
 // Stack returns a nicely formatted stack frame, skipping frames.
 // Output example:
@@ -65,7 +20,7 @@ func GoAndWaitWithCtx(ctx context.Context, handler func()) {
 //        : /root/gowork/pkg/mod/github.com/spf13/cobra@v1.1.3/command.go:897
 //        main.main: /root/gowork/src/cli/main.go:37
 //        runtime.main: /usr/local/go/src/runtime/proc.go:225
-func Stack(skip int) []byte {
+func stack(skip int) []byte {
 	buf := new(bytes.Buffer) // the returned data
 	st := make([]uintptr, 32)
 	count := runtime.Callers(skip, st)
@@ -79,15 +34,4 @@ func Stack(skip int) []byte {
 		_, _ = fmt.Fprintf(buf, "\t%s: %s:%d\n", frame.Func.Name(), frame.File, frame.Line)
 	}
 	return buf.Bytes()
-}
-
-func recovery() {
-	if e := recover(); e != nil {
-		buf := Stack(2)
-		log.Printf("safe go panic\t%v\n%s", e, buf)
-	}
-}
-
-func wgdone(wg *sync.WaitGroup) {
-	wg.Done()
 }
