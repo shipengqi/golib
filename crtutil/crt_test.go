@@ -112,8 +112,13 @@ func TestIsSelfSigned(t *testing.T) {
 			false,
 		},
 		{
-			"should be self-signed",
+			"ca cart should be self-signed",
 			"testdata/self-signed.crt",
+			true,
+		},
+		{
+			"server cert should be self-signed",
+			"testdata/self-signed-not-ca.crt",
 			true,
 		},
 	}
