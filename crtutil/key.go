@@ -7,12 +7,14 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"io/ioutil"
+	"os"
+
+	"github.com/shipengqi/golib/convutil"
 )
 
 // ReadAsSignerFromFile read a crypto.PrivateKey from the given file.
 func ReadAsSignerFromFile(fpath string) (crypto.PrivateKey, error) {
-	f, err := ioutil.ReadFile(fpath)
+	f, err := os.ReadFile(fpath)
 	if err != nil {
 		return nil, err
 	}
@@ -21,11 +23,11 @@ func ReadAsSignerFromFile(fpath string) (crypto.PrivateKey, error) {
 
 // ReadAsSignerWithPassFromFile read a crypto.PrivateKey from the given file.
 func ReadAsSignerWithPassFromFile(keyPath, keyPass string) (crypto.PrivateKey, error) {
-	f, err := ioutil.ReadFile(keyPath)
+	f, err := os.ReadFile(keyPath)
 	if err != nil {
 		return nil, err
 	}
-	return readAsSigner(f, []byte(keyPass), false)
+	return readAsSigner(f, convutil.S2B(keyPass), false)
 }
 
 // ReadAsSigner read a crypto.PrivateKey from the given data.
@@ -38,7 +40,7 @@ func readAsSigner(key, keypass []byte, isBase64 bool) (crypto.PrivateKey, error)
 	dkeystr := key
 
 	if isBase64 {
-		dkeystr, err = base64.StdEncoding.DecodeString(string(key))
+		dkeystr, err = base64.StdEncoding.DecodeString(convutil.B2S(key))
 		if err != nil {
 			return nil, err
 		}
