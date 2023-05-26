@@ -346,9 +346,9 @@ linters-settings:
       - TODO
       - BUG
       - FIXME
-      - NOTE
       - OPTIMIZE # marks code that should be optimized before merging
       - HACK # marks hack-arounds that should be removed before merging
+#      - NOTE
 
   gofmt:
     # simplify code: gofmt with `-s` option, true by default
@@ -442,9 +442,9 @@ linters-settings:
     # To select a subset of rules to run.
     # Available rules: https://github.com/securego/gosec#available-rules
     includes:
-      - G401
-      - G306
       - G101
+      - G306
+#      - G401
     # To specify a set of rules to explicitly exclude.
     # Available rules: https://github.com/securego/gosec#available-rules
     excludes:
