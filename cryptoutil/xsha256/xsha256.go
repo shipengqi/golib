@@ -1,3 +1,4 @@
+// Package xsha256 provides useful functions for SHA256 encryption/decryption algorithms.
 package xsha256
 
 import (

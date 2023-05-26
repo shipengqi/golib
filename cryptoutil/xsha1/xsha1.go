@@ -1,4 +1,4 @@
-package xsha256
+package xsha1
 
 import (
 	"crypto/sha1"

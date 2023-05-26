@@ -1,3 +1,4 @@
+// Package xmd5 provides useful functions for MD5 encryption/decryption algorithms.
 package xmd5
 
 import (
