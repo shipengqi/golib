@@ -30,9 +30,9 @@ func ReadAsX509FromFile(fpath string) ([]*x509.Certificate, error) {
 func ReadAsX509(data []byte) ([]*x509.Certificate, error) {
 	var (
 		certs []*x509.Certificate
-		cert *x509.Certificate
+		cert  *x509.Certificate
 		block *pem.Block
-		err error
+		err   error
 	)
 
 	for len(data) > 0 {
@@ -55,8 +55,8 @@ func ReadAsX509(data []byte) ([]*x509.Certificate, error) {
 // EncodeX509ToPEM converts a x509.Certificate into a PEM block.
 func EncodeX509ToPEM(cert *x509.Certificate, headers map[string]string) []byte {
 	return pem.EncodeToMemory(&pem.Block{
-		Type:  "CERTIFICATE",
-		Bytes: cert.Raw,
+		Type:    "CERTIFICATE",
+		Bytes:   cert.Raw,
 		Headers: headers,
 	})
 }
@@ -68,8 +68,8 @@ func EncodeX509ChainToPEM(chain []*x509.Certificate, headers map[string]string) 
 		if err := pem.Encode(
 			&buf,
 			&pem.Block{
-				Type:  "CERTIFICATE",
-				Bytes: cert.Raw,
+				Type:    "CERTIFICATE",
+				Bytes:   cert.Raw,
 				Headers: headers,
 			},
 		); err != nil {
@@ -81,5 +81,12 @@ func EncodeX509ChainToPEM(chain []*x509.Certificate, headers map[string]string) 
 
 // IsSelfSigned whether the given x509.Certificate is self-signed.
 func IsSelfSigned(cert *x509.Certificate) bool {
-	return cert.CheckSignatureFrom(cert) == nil
+	if err := cert.CheckSignatureFrom(cert); err == nil {
+		return true
+	}
+	if cert.Subject.String() == cert.Issuer.String() {
+		return true
+	}
+
+	return false
 }
