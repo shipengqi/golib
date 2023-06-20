@@ -12,10 +12,10 @@ import (
 const defaultPlaceholder = "<>"
 
 // LoggingFunc callback function for logging command output
-type LoggingFunc func(line []byte) error
+type LoggingFunc func(line []byte)
 
 // DefaultLoggingFunc do nothing
-func DefaultLoggingFunc(line []byte) error { return nil }
+func DefaultLoggingFunc(line []byte) { return }
 
 // RetrieveFlagFromCLI returns value of the given flag from os.Args.
 func RetrieveFlagFromCLI(long string, short string) (value string, ok bool) {
@@ -94,11 +94,9 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	}
 
 	scanner := bufio.NewScanner(stdout)
-	for scanner.Scan() {
-		if err = fn(scanner.Bytes()); err != nil {
-			return err
-		}
-	}
 
+	for scanner.Scan() {
+		fn(scanner.Bytes())
+	}
 	return cmd.Wait()
 }
