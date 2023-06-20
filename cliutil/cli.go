@@ -15,7 +15,7 @@ const defaultPlaceholder = "<>"
 type LoggingFunc func(line []byte)
 
 // DefaultLoggingFunc do nothing
-func DefaultLoggingFunc(line []byte) { return }
+func DefaultLoggingFunc(line []byte) {}
 
 // RetrieveFlagFromCLI returns value of the given flag from os.Args.
 func RetrieveFlagFromCLI(long string, short string) (value string, ok bool) {
