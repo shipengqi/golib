@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"errors"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -93,27 +91,12 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	if err = cmd.Start(); err != nil {
 		return err
 	}
-	reader := bufio.NewReader(stdout)
-	err = readBuf(reader, fn)
-	if err != nil {
-		return err
-	}
+	scanner := bufio.NewScanner(stdout)
+	go func() {
+		for scanner.Scan() {
+			_ = fn(scanner.Bytes())
+		}
+	}()
 
 	return cmd.Wait()
-}
-
-func readBuf(r *bufio.Reader, fn LoggingFunc) error {
-	for {
-		if line, _, err := r.ReadLine(); err == nil {
-			err = fn(line)
-			if err != nil {
-				return err
-			}
-		} else if errors.Is(err, io.EOF) {
-			break
-		} else {
-			return err
-		}
-	}
-	return nil
 }
