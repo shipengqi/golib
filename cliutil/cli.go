@@ -88,15 +88,17 @@ func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...strin
 	defer func() {
 		_ = stdout.Close()
 	}()
+
 	if err = cmd.Start(); err != nil {
 		return err
 	}
+
 	scanner := bufio.NewScanner(stdout)
-	go func() {
-		for scanner.Scan() {
-			_ = fn(scanner.Bytes())
+	for scanner.Scan() {
+		if err = fn(scanner.Bytes()); err != nil {
+			return err
 		}
-	}()
+	}
 
 	return cmd.Wait()
 }
