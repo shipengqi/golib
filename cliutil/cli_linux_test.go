@@ -79,7 +79,7 @@ func TestShellExecPipe(t *testing.T) {
 }
 
 func TestExecPipe(t *testing.T) {
-	testcmdstderr := "echo 1;echo 2;echo 3;echo 4 1>&2"
+	testcmdstderr := "echo 1 1>&2;echo 2 1>&2;echo 3 1>&2;echo 4 1>&2"
 	t.Run("exec stderr pipe", func(t *testing.T) {
 		var lines []string
 		err := ExecErrPipe(context.TODO(), func(line []byte) {
