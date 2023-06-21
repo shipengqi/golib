@@ -58,7 +58,7 @@ func TestShellExecPipe(t *testing.T) {
 		testcmd2 = "echo 1;echo 2;echo 3;echo 4"
 		// t.Skip("Skipped")
 	}
-	t.Run("exec pipe err", func(t *testing.T) {
+	t.Run("exec stdout pipe err", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) {
 			lines = append(lines, string(line))
@@ -68,11 +68,23 @@ func TestShellExecPipe(t *testing.T) {
 			strings.TrimSpace(err.Error()))
 	})
 
-	t.Run("exec pipe", func(t *testing.T) {
+	t.Run("exec stdout pipe", func(t *testing.T) {
 		var lines []string
 		err := ShellExecPipe(context.TODO(), func(line []byte) {
 			lines = append(lines, string(line))
 		}, testcmd2)
+		assert.NoError(t, err)
+		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
+	})
+}
+
+func TestExecPipe(t *testing.T) {
+	testcmdstderr := "echo 1;echo 2;echo 3;echo 4 1>&2"
+	t.Run("exec stderr pipe", func(t *testing.T) {
+		var lines []string
+		err := ExecErrPipe(context.TODO(), func(line []byte) {
+			lines = append(lines, string(line))
+		}, "/bin/sh", "-c", testcmdstderr)
 		assert.NoError(t, err)
 		assert.Equal(t, []string{"1", "2", "3", "4"}, lines)
 	})

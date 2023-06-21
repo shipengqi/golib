@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -78,22 +79,40 @@ func ExecContext(ctx context.Context, command string, args ...string) (output st
 }
 
 // ExecPipe executes the given command with a pipe that will be connected to the command's
-// stdout and stderr when the command starts.
+// stdout when the command starts.
 func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...string) error {
+	return pipe(ctx, fn, false, command, args...)
+}
+
+// ExecErrPipe executes the given command with a pipe that will be connected to the command's
+// stderr when the command starts.
+func ExecErrPipe(ctx context.Context, fn LoggingFunc, command string, args ...string) error {
+	return pipe(ctx, fn, true, command, args...)
+}
+
+func pipe(ctx context.Context, fn LoggingFunc, isstderr bool, command string, args ...string) error {
 	cmd := exec.CommandContext(ctx, command, args...)
-	stdout, err := cmd.StdoutPipe()
+	var (
+		rc  io.ReadCloser
+		err error
+	)
+	if isstderr {
+		rc, err = cmd.StderrPipe()
+	} else {
+		rc, err = cmd.StdoutPipe()
+	}
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = stdout.Close()
+		_ = rc.Close()
 	}()
 
 	if err = cmd.Start(); err != nil {
 		return err
 	}
 
-	scanner := bufio.NewScanner(stdout)
+	scanner := bufio.NewScanner(rc)
 
 	for scanner.Scan() {
 		fn(scanner.Bytes())
