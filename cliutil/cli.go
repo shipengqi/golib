@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"errors"
 	"io"
 	"os"
 	"os/exec"
@@ -14,10 +13,10 @@ import (
 const defaultPlaceholder = "<>"
 
 // LoggingFunc callback function for logging command output
-type LoggingFunc func(line []byte) error
+type LoggingFunc func(line []byte)
 
 // DefaultLoggingFunc do nothing
-func DefaultLoggingFunc(line []byte) error { return nil }
+func DefaultLoggingFunc(line []byte) {}
 
 // RetrieveFlagFromCLI returns value of the given flag from os.Args.
 func RetrieveFlagFromCLI(long string, short string) (value string, ok bool) {
@@ -80,40 +79,43 @@ func ExecContext(ctx context.Context, command string, args ...string) (output st
 }
 
 // ExecPipe executes the given command with a pipe that will be connected to the command's
-// stdout and stderr when the command starts.
+// stdout when the command starts.
 func ExecPipe(ctx context.Context, fn LoggingFunc, command string, args ...string) error {
+	return pipe(ctx, fn, false, command, args...)
+}
+
+// ExecErrPipe executes the given command with a pipe that will be connected to the command's
+// stderr when the command starts.
+func ExecErrPipe(ctx context.Context, fn LoggingFunc, command string, args ...string) error {
+	return pipe(ctx, fn, true, command, args...)
+}
+
+func pipe(ctx context.Context, fn LoggingFunc, isstderr bool, command string, args ...string) error {
 	cmd := exec.CommandContext(ctx, command, args...)
-	stdout, err := cmd.StdoutPipe()
+	var (
+		rc  io.ReadCloser
+		err error
+	)
+	if isstderr {
+		rc, err = cmd.StderrPipe()
+	} else {
+		rc, err = cmd.StdoutPipe()
+	}
 	if err != nil {
 		return err
 	}
 	defer func() {
-		_ = stdout.Close()
+		_ = rc.Close()
 	}()
+
 	if err = cmd.Start(); err != nil {
 		return err
 	}
-	reader := bufio.NewReader(stdout)
-	err = readBuf(reader, fn)
-	if err != nil {
-		return err
-	}
 
+	scanner := bufio.NewScanner(rc)
+
+	for scanner.Scan() {
+		fn(scanner.Bytes())
+	}
 	return cmd.Wait()
-}
-
-func readBuf(r *bufio.Reader, fn LoggingFunc) error {
-	for {
-		if line, _, err := r.ReadLine(); err == nil {
-			err = fn(line)
-			if err != nil {
-				return err
-			}
-		} else if errors.Is(err, io.EOF) {
-			break
-		} else {
-			return err
-		}
-	}
-	return nil
 }
