@@ -110,3 +110,29 @@ func TestString2Int(t *testing.T) {
 		})
 	}
 }
+
+func TestContainsOnly(t *testing.T) {
+	tests := []struct {
+		title    string
+		input    string
+		input2   string
+		expected bool
+	}{
+		{"should be true", "234234", "0123456789", true},
+		{"should be false", "as234234", "0123456789", false},
+		{"should be true", "234234%", "0123456789", false},
+		{"should be true", "testcase2323-", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", true},
+		{"should be true", "testcase2323", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", true},
+		{"should be true", "testcase", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", true},
+		{"should be false", "testcase+", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", false},
+		{"should be true", "testcase2323+", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", false},
+		{"should be true", "testcase 2323", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-0123456789", false},
+	}
+
+	for _, v := range tests {
+		t.Run(fmt.Sprintf("'%s' contains only '%s' %s", v.input, v.input2, v.title), func(t *testing.T) {
+			got := ContainsOnly(v.input, v.input2)
+			assert.Equal(t, v.expected, got)
+		})
+	}
+}
