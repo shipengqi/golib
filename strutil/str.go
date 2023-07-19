@@ -17,6 +17,13 @@ func ContainsIgnoreCase(str1, str2 string) bool {
 	return strings.Contains(strings.ToLower(str1), strings.ToLower(str2))
 }
 
+// ContainsOnly like strings.ContainsAny but does an only instead of any.
+func ContainsOnly(s string, comp string) bool {
+	return strings.IndexFunc(s, func(r rune) bool {
+		return !strings.ContainsRune(comp, r)
+	}) == -1
+}
+
 // IsEmpty check if value is empty string or blank string.
 func IsEmpty(str string) bool {
 	return strings.TrimSpace(str) == ""
