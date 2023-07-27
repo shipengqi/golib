@@ -10,3 +10,9 @@ Common libraries for Go.
 ## Documentation
 
 You can find the docs at [go docs](https://pkg.go.dev/github.com/shipengqi/golib).
+
+## 🔋 JetBrains OS licenses
+
+`golib` had been being developed with **IntelliJ IDEA** under the **free JetBrains Open Source license(s)** granted by JetBrains s.r.o., hence I would like to express my thanks here.
+
+<a href="https://www.jetbrains.com/?from=golib" target="_blank"><img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg" alt="JetBrains Logo (Main) logo." width="250" align="middle"></a>
