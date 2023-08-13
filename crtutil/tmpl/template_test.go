@@ -3,8 +3,9 @@ package tmpl
 import (
 	"testing"
 
-	"github.com/shipengqi/golib/crtutil"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/shipengqi/golib/crtutil"
 )
 
 func TestBuildDefaultCertTemplate(t *testing.T) {
