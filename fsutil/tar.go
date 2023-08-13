@@ -108,7 +108,11 @@ func untar(reader io.Reader, dst string) error {
 		if err != nil {
 			return err
 		}
-
+		// Zip Slip Vulnerability
+		// See https://cwe.mitre.org/data/definitions/22.html
+		if strings.Contains(header.Name, "..") {
+			continue
+		}
 		dstPath := filepath.Join(dst, header.Name)
 		switch header.Typeflag {
 		case tar.TypeDir: // directory
