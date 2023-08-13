@@ -16,7 +16,21 @@ const defaultPlaceholder = "<>"
 type LoggingFunc func(line []byte)
 
 // DefaultLoggingFunc do nothing
-func DefaultLoggingFunc(line []byte) {}
+func DefaultLoggingFunc(_ []byte) {}
+
+// IsHelpCmd this function simply calls RetrieveFlagFromCLI("--help", "")
+// Optionally, a single extra argument of type string can be provided to
+// indicate the short name of the help flag.
+func IsHelpCmd(short ...string) bool {
+	return findGivenCmd("help", "--help", short...)
+}
+
+// IsVersionCmd this function simply calls RetrieveFlagFromCLI("--version", "")
+// Optionally, a single extra argument of type string can be provided to
+// indicate the short name of the version flag.
+func IsVersionCmd(short ...string) bool {
+	return findGivenCmd("version", "--version", short...)
+}
 
 // RetrieveFlagFromCLI returns value of the given flag from os.Args.
 func RetrieveFlagFromCLI(long string, short string) (value string, ok bool) {
@@ -118,4 +132,21 @@ func pipe(ctx context.Context, fn LoggingFunc, isstderr bool, command string, ar
 		fn(scanner.Bytes())
 	}
 	return cmd.Wait()
+}
+
+func findGivenCmd(cmd, long string, short ...string) bool {
+	args := os.Args
+	if len(args) > 1 && args[1] == cmd {
+		return true
+	}
+
+	sh := ""
+	if len(short) > 0 {
+		sh = short[0]
+	}
+	if _, ok := RetrieveFlagFromCLI(long, sh); ok {
+		return true
+	}
+
+	return false
 }

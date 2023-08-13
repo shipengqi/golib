@@ -47,6 +47,7 @@ func readAsSigner(key, keypass []byte, isBase64 bool) (crypto.PrivateKey, error)
 	}
 	bl, _ := pem.Decode(dkeystr)
 	var keyBytes []byte
+	//nolint:staticcheck
 	if x509.IsEncryptedPEMBlock(bl) && len(keypass) > 0 {
 		keyBytes, err = x509.DecryptPEMBlock(bl, keypass)
 		if err != nil {
