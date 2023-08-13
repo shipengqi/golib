@@ -29,11 +29,59 @@ func TestRetrieveFlag(t *testing.T) {
 	}
 
 	for _, v := range tests {
-		t.Run("with flag " + v.long, func(t *testing.T) {
-			os.Args = v.args
-			value, ok := RetrieveFlagFromCLI(v.long, v.short)
-			assert.Equal(t, v.expected.value, value)
-			assert.Equal(t, v.expected.ok, ok)
-		})
+		os.Args = v.args
+		value, ok := RetrieveFlagFromCLI(v.long, v.short)
+		assert.Equal(t, v.expected.value, value)
+		assert.Equal(t, v.expected.ok, ok)
+	}
+}
+
+func TestIsHelpCmd(t *testing.T) {
+	tests := []struct {
+		short    string
+		args     []string
+		expected bool
+	}{
+		{"", []string{"./testcli", "help"}, true},
+		{"-h", []string{"./testcli", "help"}, true},
+		{"-h", []string{"./testcli", "-h"}, true},
+		{"-h", []string{"./testcli", "--help"}, true},
+		{"", []string{"./testcli", "--help"}, true},
+		{"", []string{"./testcli", "-h"}, false},
+		{"-h", []string{"./testcli"}, false},
+		{"-h", []string{"./testcli", "-f", "/test/config"}, false},
+		{"-h", []string{"./testcli", "--config", "/test/config"}, false},
+		{"-h", []string{"./testcli", "-f"}, false},
+	}
+
+	for _, v := range tests {
+		os.Args = v.args
+		ok := IsHelpCmd(v.short)
+		assert.Equal(t, v.expected, ok)
+	}
+}
+
+func TestIsVersionCmd(t *testing.T) {
+	tests := []struct {
+		short    string
+		args     []string
+		expected bool
+	}{
+		{"", []string{"./testcli", "version"}, true},
+		{"-v", []string{"./testcli", "version"}, true},
+		{"-v", []string{"./testcli", "-v"}, true},
+		{"-v", []string{"./testcli", "--version"}, true},
+		{"", []string{"./testcli", "--version"}, true},
+		{"", []string{"./testcli", "-v"}, false},
+		{"-v", []string{"./testcli"}, false},
+		{"-v", []string{"./testcli", "-f", "/test/config"}, false},
+		{"-v", []string{"./testcli", "--config", "/test/config"}, false},
+		{"-v", []string{"./testcli", "-f"}, false},
+	}
+
+	for _, v := range tests {
+		os.Args = v.args
+		ok := IsVersionCmd(v.short)
+		assert.Equal(t, v.expected, ok)
 	}
 }

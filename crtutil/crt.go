@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
-	"io/ioutil"
+	"os"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 // The data is expected to be PEM Encoded and contain one or more certificates
 // with PEM type "CERTIFICATE".
 func ReadAsX509FromFile(fpath string) ([]*x509.Certificate, error) {
-	bs, err := ioutil.ReadFile(fpath)
+	bs, err := os.ReadFile(fpath)
 	if err != nil {
 		return nil, err
 	}

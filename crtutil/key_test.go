@@ -2,7 +2,7 @@ package crtutil
 
 import (
 	"crypto/rsa"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -25,7 +25,7 @@ func TestParseKeyFileWithPass(t *testing.T) {
 }
 
 func TestParseKeyBytes(t *testing.T) {
-	f, err := ioutil.ReadFile("testdata/server-rsa-base64.key")
+	f, err := os.ReadFile("testdata/server-rsa-base64.key")
 	assert.NoError(t, err)
 
 	prik, err := ReadAsSigner(f, true)

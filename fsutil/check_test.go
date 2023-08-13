@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/shipengqi/golib/sysutil"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/shipengqi/golib/sysutil"
 )
 
 func TestIsDir(t *testing.T) {

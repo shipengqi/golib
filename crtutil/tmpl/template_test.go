@@ -3,11 +3,12 @@ package tmpl
 import (
 	"testing"
 
-	"github.com/shipengqi/golib/crtutil"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/shipengqi/golib/crtutil"
 )
 
-func TestBuildDefaultCertTemplate(t *testing.T)  {
+func TestBuildDefaultCertTemplate(t *testing.T) {
 	tests := []struct {
 		title    string
 		input    string

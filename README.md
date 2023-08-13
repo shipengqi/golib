@@ -2,7 +2,7 @@
 
 Common libraries for Go.
 
-[![Test Status](https://github.com/shipengqi/golib/actions/workflows/go.yml/badge.svg)](https://github.com/shipengqi/golib/actions/workflows/go.yml)
+[![Test Status](https://github.com/shipengqi/golib/actions/workflows/test.yaml/badge.svg)](https://github.com/shipengqi/golib/actions/workflows/test.yaml)
 [![Codecov](https://codecov.io/gh/shipengqi/golib/branch/main/graph/badge.svg?token=SMU4SI304O)](https://codecov.io/gh/shipengqi/golib)
 [![Release](https://img.shields.io/github/release/shipengqi/golib.svg)](https://github.com/shipengqi/golib/releases)
 [![License](https://img.shields.io/github/license/shipengqi/golib)](https://github.com/shipengqi/golib/blob/main/LICENSE)
