@@ -29,6 +29,11 @@ linters-settings:
     simplify: true
   dupl:
     threshold: 600
+  goimports:
+    # A comma-separated list of prefixes, which, if set, checks import paths
+    # with the given prefixes are grouped after 3rd-party packages.
+    # Default: ""
+    local-prefixes: github.com/shipengqi/golib
 
 issues:
   exclude-rules:
