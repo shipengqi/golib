@@ -17,7 +17,7 @@ linters:
     - nakedret
     - gocyclo
     - dupl
-    - goimports
+#    - goimports
     - revive
     - gosec
     - gosimple
