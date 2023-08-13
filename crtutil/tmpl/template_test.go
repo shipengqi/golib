@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBuildDefaultCertTemplate(t *testing.T)  {
+func TestBuildDefaultCertTemplate(t *testing.T) {
 	tests := []struct {
 		title    string
 		input    string
