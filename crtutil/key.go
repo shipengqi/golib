@@ -2,7 +2,9 @@ package crtutil
 
 import (
 	"crypto"
+	"crypto/ecdh"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
@@ -62,19 +64,20 @@ func readAsSigner(key, keypass []byte, isBase64 bool) (crypto.PrivateKey, error)
 		return pkcs1, nil
 	}
 
+	var eck *ecdsa.PrivateKey
+	if eck, err = x509.ParseECPrivateKey(keyBytes); err == nil {
+		return eck, nil
+	}
+
 	var pkcs8 interface{}
 	if pkcs8, err = x509.ParsePKCS8PrivateKey(keyBytes); err == nil {
 		switch pkcs8k := pkcs8.(type) {
-		case *rsa.PrivateKey, *ecdsa.PrivateKey:
+		case *rsa.PrivateKey, *ecdsa.PrivateKey, *ecdh.PrivateKey, ed25519.PrivateKey:
 			return pkcs8k, nil
 		default:
 			return nil, ErrUnknownKeyType
 		}
 	}
 
-	var eck *ecdsa.PrivateKey
-	if eck, err = x509.ParseECPrivateKey(keyBytes); err == nil {
-		return eck, nil
-	}
 	return nil, err
 }

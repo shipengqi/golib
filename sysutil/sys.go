@@ -17,7 +17,7 @@ func User() *user.User {
 	return u
 }
 
-// FQDN returns the FQDN of current.
+// FQDN returns the FQDN of current node.
 func FQDN() (string, error) {
 	return fqdn()
 }
@@ -77,4 +77,15 @@ func IsBigEndian() bool {
 // TmpDir Alias for os.TempDir.
 func TmpDir() string {
 	return os.TempDir()
+}
+
+// EnvOr retrieves the value of the environment variable named
+// by the key. If the variable is present in the environment the
+// value (which may be empty) is returned.
+// Otherwise, the default value will be returned.
+func EnvOr(key, def string) string {
+	if v, ok := os.LookupEnv(key); ok {
+		return v
+	}
+	return def
 }
