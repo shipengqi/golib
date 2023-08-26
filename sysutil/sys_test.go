@@ -52,6 +52,20 @@ func TestTmpDir(t *testing.T) {
 	assert.NotEmpty(t, got)
 }
 
+func TestEnvOr(t *testing.T) {
+	testEnvKey := "TEST_ENV_KEY"
+	testEnvValue := "test"
+	unknownEnvKey := "UNKNOWN_ENV_KEY"
+	unknownEnvValue := "unknown"
+	err := os.Setenv(testEnvKey, testEnvValue)
+	assert.NoError(t, err)
+	got := EnvOr(testEnvKey, "")
+	assert.Equal(t, testEnvValue, got)
+
+	got = EnvOr(unknownEnvKey, unknownEnvValue)
+	assert.Equal(t, unknownEnvValue, got)
+}
+
 func isci() bool {
 	if os.Getenv("CI") == "true" {
 		return true

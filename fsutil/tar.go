@@ -22,7 +22,7 @@ func Tar(src, dst string) error {
 	return tarf(fw, src)
 }
 
-// UnTar Extract all files from an archive.
+// UnTar extract all files from an archive.
 func UnTar(src, dst string) (err error) {
 	fr, err := os.Open(src)
 	if err != nil {

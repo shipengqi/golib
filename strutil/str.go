@@ -18,9 +18,10 @@ func ContainsIgnoreCase(str1, str2 string) bool {
 }
 
 // ContainsOnly like strings.ContainsAny but does an only instead of any.
-func ContainsOnly(s string, comp string) bool {
+// If all characters in s are found in chars, the function returns true.
+func ContainsOnly(s string, chars string) bool {
 	return strings.IndexFunc(s, func(r rune) bool {
-		return !strings.ContainsRune(comp, r)
+		return !strings.ContainsRune(chars, r)
 	}) == -1
 }
 
