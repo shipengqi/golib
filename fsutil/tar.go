@@ -103,7 +103,7 @@ func untar(reader io.Reader, dst string) error {
 	for {
 		header, err := tr.Next()
 		if err != nil {
-			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
+			if errors.Is(err, io.EOF) {
 				break
 			}
 			return err
@@ -114,6 +114,11 @@ func untar(reader io.Reader, dst string) error {
 			continue
 		}
 		dstPath := filepath.Join(dst, header.Name)
+		baseDir := filepath.Dir(dstPath)
+		if err = MkDirAll(baseDir); err != nil {
+			return err
+		}
+
 		switch header.Typeflag {
 		case tar.TypeDir: // directory
 			if err = MkDirAll(dstPath); err != nil {
