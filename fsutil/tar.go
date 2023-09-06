@@ -102,10 +102,10 @@ func untar(reader io.Reader, dst string) error {
 	tr := tar.NewReader(reader)
 	for {
 		header, err := tr.Next()
-		if errors.Is(err, io.EOF) {
-			break
-		}
 		if err != nil {
+			if errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) {
+				break
+			}
 			return err
 		}
 		// Zip Slip Vulnerability
