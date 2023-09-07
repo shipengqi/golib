@@ -19,6 +19,22 @@ func TestTar(t *testing.T) {
 	defer func() { _ = os.RemoveAll(undst) }()
 	err = UnTar(unsrc, undst)
 	assert.NoError(t, err)
+
+	f, err := os.Stat("testdata/src2/testdata/src/subdir")
+	assert.NoError(t, err)
+	assert.True(t, f.IsDir())
+
+	f, err = os.Stat("testdata/src2/testdata/src/a.txt")
+	assert.NoError(t, err)
+	assert.False(t, f.IsDir())
+
+	f, err = os.Stat("testdata/src2/testdata/src/b.txt")
+	assert.NoError(t, err)
+	assert.False(t, f.IsDir())
+
+	f, err = os.Stat("testdata/src2/testdata/src/subdir/c.txt")
+	assert.NoError(t, err)
+	assert.False(t, f.IsDir())
 }
 
 func TestTarFile(t *testing.T) {
@@ -33,6 +49,13 @@ func TestTarFile(t *testing.T) {
 	defer func() { _ = os.RemoveAll(undst) }()
 	err = UnTar(unsrc, undst)
 	assert.NoError(t, err)
+	f, err := os.Stat("testdata/src2/testdata/src/subdir")
+	assert.NoError(t, err)
+	assert.True(t, f.IsDir())
+
+	f, err = os.Stat("testdata/src2/testdata/src/subdir/c.txt")
+	assert.NoError(t, err)
+	assert.False(t, f.IsDir())
 }
 
 func TestCompress(t *testing.T) {
