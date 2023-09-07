@@ -125,17 +125,23 @@ func untar(reader io.Reader, dst string) error {
 				return err
 			}
 		case tar.TypeReg: // file
-			file, err := os.OpenFile(dstPath, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
-			if err != nil {
+			if err = createf(tr, dstPath, header.FileInfo().Mode()); err != nil {
 				return err
 			}
-			_, err = io.Copy(file, tr)
-			if err != nil {
-				_ = file.Close()
-				return err
-			}
-			_ = file.Close()
 		}
+	}
+	return nil
+}
+
+func createf(src io.Reader, dst string, mode os.FileMode) error {
+	file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR|os.O_TRUNC, mode)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = file.Close() }()
+	_, err = io.Copy(file, src)
+	if err != nil {
+		return err
 	}
 	return nil
 }
