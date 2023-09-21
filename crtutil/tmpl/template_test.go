@@ -18,6 +18,7 @@ func TestBuildDefaultCertTemplate(t *testing.T) {
 			"successfully output the certificate according to the given template",
 			"../testdata/server.crt",
 			[]string{
+				"Version: 3",
 				"Serial: 4751997750760398084",
 				"Valid: 2021-11-29 08:39 UTC to 2022-11-29 08:39 UTC",
 				"Signature: SHA256-RSA",
@@ -30,6 +31,7 @@ func TestBuildDefaultCertTemplate(t *testing.T) {
 			"successfully output the self-signed certificate according to the given template",
 			"../testdata/self-signed.crt",
 			[]string{
+				"Version: 3",
 				"Serial: 5577006791947779410",
 				"Valid: 2022-09-23 06:09 UTC to 2032-09-30 06:09 UTC",
 				"Signature: SHA256-RSA (self-signed)",

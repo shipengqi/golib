@@ -20,6 +20,7 @@ const (
 {{ . | isSelfSigned }}
 {{end -}}
 
+Version: {{.Version}}
 Serial: {{.SerialNumber}}
 Valid: {{.NotBefore | notBefore}} to {{.NotAfter | notAfter}}
 Signature: {{.SignatureAlgorithm | highlightAlgorithm}}{{- template "IsSelfSigned" . -}}
