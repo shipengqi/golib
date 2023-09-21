@@ -53,25 +53,27 @@ var KeyUsageStringMapping = map[x509.KeyUsage]string{
 	x509.KeyUsageKeyEncipherment:   "Key Encipherment",
 	x509.KeyUsageDataEncipherment:  "Data Encipherment",
 	x509.KeyUsageKeyAgreement:      "Key Agreement",
-	x509.KeyUsageCertSign:          "Cert Sign",
+	x509.KeyUsageCertSign:          "Certificate Sign",
 	x509.KeyUsageCRLSign:           "CRL Sign",
 	x509.KeyUsageEncipherOnly:      "Encipher Only",
 	x509.KeyUsageDecipherOnly:      "Decipher Only",
 }
 
 var ExtKeyUsageStringMapping = map[x509.ExtKeyUsage]string{
-	x509.ExtKeyUsageAny:                        "Any",
-	x509.ExtKeyUsageServerAuth:                 "Server Auth",
-	x509.ExtKeyUsageClientAuth:                 "Client Auth",
-	x509.ExtKeyUsageCodeSigning:                "Code Signing",
-	x509.ExtKeyUsageEmailProtection:            "Email Protection",
-	x509.ExtKeyUsageIPSECEndSystem:             "IPSEC End System",
-	x509.ExtKeyUsageIPSECTunnel:                "IPSEC Tunnel",
-	x509.ExtKeyUsageIPSECUser:                  "IPSEC User",
-	x509.ExtKeyUsageTimeStamping:               "Time Stamping",
-	x509.ExtKeyUsageOCSPSigning:                "OCSP Signing",
-	x509.ExtKeyUsageMicrosoftServerGatedCrypto: "Microsoft ServerGatedCrypto",
-	x509.ExtKeyUsageNetscapeServerGatedCrypto:  "Netscape ServerGatedCrypto",
+	x509.ExtKeyUsageAny:                            "Any",
+	x509.ExtKeyUsageServerAuth:                     "TLS Web Server Authentication",
+	x509.ExtKeyUsageClientAuth:                     "TLS Web Client Authentication",
+	x509.ExtKeyUsageCodeSigning:                    "Code Signing",
+	x509.ExtKeyUsageEmailProtection:                "Email Protection",
+	x509.ExtKeyUsageIPSECEndSystem:                 "IPSEC End System",
+	x509.ExtKeyUsageIPSECTunnel:                    "IPSEC Tunnel",
+	x509.ExtKeyUsageIPSECUser:                      "IPSEC User",
+	x509.ExtKeyUsageTimeStamping:                   "Time Stamping",
+	x509.ExtKeyUsageOCSPSigning:                    "OCSP Signing",
+	x509.ExtKeyUsageMicrosoftServerGatedCrypto:     "Microsoft ServerGatedCrypto",
+	x509.ExtKeyUsageNetscapeServerGatedCrypto:      "Netscape ServerGatedCrypto",
+	x509.ExtKeyUsageMicrosoftCommercialCodeSigning: "Microsoft CommercialCodeSigning",
+	x509.ExtKeyUsageMicrosoftKernelCodeSigning:     "Microsoft KernelCodeSigning",
 }
 
 var KeyUsages = []x509.KeyUsage{
@@ -262,6 +264,13 @@ func BitLength(key *rsa.PublicKey) string {
 		return Colorize(strconv.Itoa(blen), "yellow")
 	}
 	return Colorize(strconv.Itoa(blen), "green")
+}
+
+func HighlightCA(isCA bool) string {
+	if isCA {
+		return Colorize("TRUE", "green")
+	}
+	return Colorize("FALSE", "red")
 }
 
 func thresholdToTime(threshold string, nowT ...time.Time) time.Time {
