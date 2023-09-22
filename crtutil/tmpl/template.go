@@ -20,6 +20,7 @@ const (
 {{ . | isSelfSigned }}
 {{end -}}
 
+Version: {{.Version}}
 Serial: {{.SerialNumber}}
 Valid: {{.NotBefore | notBefore}} to {{.NotAfter | notAfter}}
 Signature: {{.SignatureAlgorithm | highlightAlgorithm}}{{- template "IsSelfSigned" . -}}
@@ -37,7 +38,7 @@ Subject Key ID: {{.SubjectKeyId | tohex}}
 Authority Key ID: {{.AuthorityKeyId | tohex}}
 {{- end}}
 {{- if .BasicConstraintsValid}}
-Basic Constraints: CA:{{.IsCA}}{{if .MaxPathLen}}, pathlen:{{.MaxPathLen}}{{end}}{{end}}
+Basic Constraints: CA:{{.IsCA | highlightCA}}{{if .MaxPathLen}}, pathlen:{{.MaxPathLen}}{{end}}{{end}}
 {{- if (nameConstraints .) }}
 Name Constraints{{if .PermittedDNSDomainsCritical}} (critical){{end}}: 
 {{- if .PermittedDNSDomains}}
@@ -155,6 +156,7 @@ func BuildCertFuncMap() template.FuncMap {
 		"nameConstraints":    ShowNameConstraints,
 		"showBitLen":         ShowBitLength,
 		"bitLen":             BitLength,
+		"highlightCA":        HighlightCA,
 	}
 	for k, v := range extras {
 		funcmap[k] = v
