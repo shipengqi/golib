@@ -161,9 +161,8 @@ func NotAfter(end time.Time) string {
 		return ColorizeTimeString(end, "red")
 	} else if end.Before(threshold) {
 		return ColorizeTimeString(end, "yellow")
-	} else {
-		return ColorizeTimeString(end, "green")
 	}
+	return ColorizeTimeString(end, "green")
 }
 
 // KeyUsage returns key usage string from a certificate.
