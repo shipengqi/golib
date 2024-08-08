@@ -8,16 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMonthIntervalTimeFromNow(t *testing.T) {
+func TestMonthIntervalTimeFromNum(t *testing.T) {
 	year, month, _ := time.Now().Date()
 	thisMonth := time.Date(year, month, 1, 0, 0, 0, 0, time.Local).Format("2006-01-02")
-	start, end := MonthIntervalTimeWithGivenMon(thisMonth)
-	s, e := MonthIntervalTimeFromNow(0)
+	start, end, _ := MonthIntervalTimeFromMon(thisMonth)
+	s, e := MonthIntervalTimeFromNum(0)
 	assert.Equal(t, start, s)
 	assert.Equal(t, end, e)
 }
 
-func TestMonthIntervalTimeWithGivenMon(t *testing.T) {
+func TestMonthIntervalTimeFromMon(t *testing.T) {
 	tests := []struct {
 		mon   string
 		start string
@@ -36,14 +36,14 @@ func TestMonthIntervalTimeWithGivenMon(t *testing.T) {
 
 	for _, v := range tests {
 		t.Run(fmt.Sprintf("mon %s", v.mon), func(t *testing.T) {
-			start, end := MonthIntervalTimeWithGivenMon(v.mon)
+			start, end, _ := MonthIntervalTimeFromMon(v.mon)
 			assert.Equal(t, v.start, start)
 			assert.Equal(t, v.end, end)
 		})
 	}
 }
 
-func TestMonthIntervalTimeWithGivenMonTimeParam(t *testing.T) {
+func TestMonthIntervalTimeFromMonTimeParam(t *testing.T) {
 	tests := []struct {
 		mon    string
 		start  string
@@ -58,7 +58,7 @@ func TestMonthIntervalTimeWithGivenMonTimeParam(t *testing.T) {
 
 	for _, v := range tests {
 		t.Run(fmt.Sprintf("mon %s", v.mon), func(t *testing.T) {
-			start, end := MonthIntervalTimeWithGivenMon(v.mon, v.layout)
+			start, end, _ := MonthIntervalTimeFromMon(v.mon, v.layout)
 			assert.Equal(t, v.start, start)
 			assert.Equal(t, v.end, end)
 		})
