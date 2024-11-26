@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/fatih/color v1.18.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/crypto v0.29.0
 )
 
