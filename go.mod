@@ -1,12 +1,13 @@
 module github.com/shipengqi/golib
 
 go 1.22
+toolchain go1.23.6
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/fatih/color v1.18.0
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.35.0
 )
 
 require (
