@@ -1,7 +1,6 @@
 module github.com/shipengqi/golib
 
-go 1.22
-toolchain go1.23.6
+go 1.23.0
 
 require (
 	github.com/Masterminds/sprig/v3 v3.3.0
@@ -25,6 +24,5 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
