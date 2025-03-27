@@ -104,14 +104,15 @@ func Walk(fpath string, fn WalkFunc) error {
 	}
 	defer func() { _ = fd.Close() }()
 	s := bufio.NewScanner(fd)
-	for {
-		if !s.Scan() {
-			break
-		}
+	for s.Scan() {
 		err = fn(s.Bytes())
 		if err != nil {
 			return err
 		}
 	}
+	if err = s.Err(); err != nil {
+		return err
+	}
+
 	return nil
 }
